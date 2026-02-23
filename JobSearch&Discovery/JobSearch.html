@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Job Portal - Search Jobs</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background: #f5f6fa;
+    }
+
+    /* Header */
+    header {
+        background: #2f80ed;
+        color: white;
+        padding: 20px;
+        text-align: center;
+    }
+
+    /* Container */
+    .container {
+        width: 80%;
+        margin: 30px auto;
+    }
+
+    /* Search box */
+    .search-box {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    input {
+        flex: 1;
+        padding: 10px;
+        font-size: 16px;
+    }
+
+    button {
+        padding: 10px 15px;
+        border: none;
+        cursor: pointer;
+        color: white;
+    }
+
+    .search-btn { background: #2f80ed; }
+    .clear-btn { background: #eb5757; }
+
+    .message {
+        color: #eb5757;
+        margin-bottom: 10px;
+    }
+
+    .count {
+        margin-bottom: 15px;
+        font-weight: bold;
+    }
+
+    /* Job card */
+    .job-card {
+        background: white;
+        padding: 15px;
+        margin-bottom: 12px;
+        border-radius: 6px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .job-title {
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    .company {
+        color: #555;
+        margin: 4px 0;
+    }
+
+    .view-btn {
+        margin-top: 8px;
+        background: #27ae60;
+        padding: 6px 12px;
+        border-radius: 4px;
+    }
+
+    .empty {
+        text-align: center;
+        color: #777;
+        margin-top: 40px;
+    }
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>Job Portal</h1>
+    <p>Find your dream job</p>
+</header>
+
+<div class="container">
+
+    <!-- Search -->
+    <div class="search-box">
+        <input id="searchInput" placeholder="Search job title, company, or location">
+        <button class="search-btn" onclick="searchJobs()">Search</button>
+        <button class="clear-btn" onclick="clearSearch()">Clear</button>
+    </div>
+
+    <div id="message" class="message"></div>
+    <div id="count" class="count"></div>
+
+    <div id="results"></div>
+
+</div>
+
+<script>
+
+// Mock database
+const jobs = [
+    {id:1,title:"Frontend Developer",company:"TechSoft",location:"Kuala Lumpur",salary:"RM 4,500"},
+    {id:2,title:"Backend Developer",company:"CodeWorks",location:"Penang",salary:"RM 5,000"},
+    {id:3,title:"UI/UX Designer",company:"DesignPro",location:"Johor",salary:"RM 4,000"},
+    {id:4,title:"Software Engineer",company:"InnovaTech",location:"Selangor",salary:"RM 5,500"},
+    {id:5,title:"Data Analyst",company:"DataCorp",location:"Kuala Lumpur",salary:"RM 4,800"},
+    {id:6,title:"Mobile Developer",company:"AppWorld",location:"Penang",salary:"RM 5,200"}
+];
+
+// Initial display
+displayJobs(jobs);
+
+// ⭐ Main search function
+function searchJobs(){
+    const keyword = document.getElementById("searchInput").value.trim();
+    const message = document.getElementById("message");
+
+    message.textContent = "";
+
+    // SAT: empty validation
+    if(keyword === ""){
+        message.textContent = "Please enter a keyword.";
+        return;
+    }
+
+    // SAT: case-insensitive + partial
+    const filtered = jobs.filter(job =>
+        job.title.toLowerCase().includes(keyword.toLowerCase()) ||
+        job.company.toLowerCase().includes(keyword.toLowerCase()) ||
+        job.location.toLowerCase().includes(keyword.toLowerCase())
+    );
+
+    if(filtered.length === 0){
+        displayEmpty(keyword);
+        return;
+    }
+
+    displayJobs(filtered);
+}
+
+// ⭐ Display job list
+function displayJobs(list){
+    const results = document.getElementById("results");
+    const count = document.getElementById("count");
+
+    results.innerHTML = "";
+    count.textContent = list.length + " job(s) found";
+
+    list.forEach(job=>{
+        const div = document.createElement("div");
+        div.className = "job-card";
+        div.innerHTML = `
+            <div class="job-title">${job.title}</div>
+            <div class="company">${job.company} • ${job.location}</div>
+            <div>Salary: ${job.salary}</div>
+            <button class="view-btn" onclick="viewDetails(${job.id})">View Details</button>
+        `;
+        results.appendChild(div);
+    });
+}
+
+// ⭐ Empty state
+function displayEmpty(keyword){
+    document.getElementById("results").innerHTML =
+        `<div class="empty">No jobs found for "<b>${keyword}</b>"</div>`;
+    document.getElementById("count").textContent = "0 jobs found";
+}
+
+// ⭐ Clear search
+function clearSearch(){
+    document.getElementById("searchInput").value = "";
+    document.getElementById("message").textContent = "";
+    displayJobs(jobs);
+}
+
+// ⭐ Placeholder for User Story 4
+function viewDetails(id){
+    alert("Navigate to job details page for Job ID: " + id);
+}
+
+</script>
+
+</body>
+</html>
