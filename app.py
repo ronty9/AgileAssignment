@@ -9,6 +9,21 @@ DB_PATH = "jobs.db"
 
 ALLOWED_JOB_TYPES = ["Full-time", "Part-time", "Internship", "Contract"]
 
+# Input length limits
+TITLE_MAX       = 100
+LOCATION_MAX    = 100
+DESCRIPTION_MIN = 20
+DESCRIPTION_MAX = 5000
+DEADLINE_MAX_YEARS = 2    # deadline must not be > 2 years from today
+
+
+def _add_years(d, years):
+    """Add `years` to date `d`, capping Feb-29 to Feb-28 in non-leap years."""
+    try:
+        return d.replace(year=d.year + years)
+    except ValueError:          # e.g. Feb 29 → Feb 28 in target year
+        return d.replace(year=d.year + years, day=28)
+
 
 # --------------------------------------------------
 # Shared CSS / navbar injected into every template
@@ -171,6 +186,7 @@ SHARED_HEAD = """
   .form-field.has-error .form-control { border-color: #f87171; background: #fffafa; }
   .form-field.has-error .form-control:focus { box-shadow: 0 0 0 3px rgba(239,68,68,.12); }
   .field-error { margin-top: 5px; color: var(--error); font-size: 13px; font-weight: 500; }
+  .char-hint { margin-top: 4px; font-size: 12px; color: var(--muted); }
   .error-summary {
     border: 1px solid var(--error-border); background: var(--error-bg);
     border-radius: var(--radius-sm); padding: 12px 16px; margin-bottom: 20px;
@@ -350,6 +366,23 @@ def validate_job_form(form_data):
         if not value:
             errors[field] = f"{label} is required."
 
+    # Title length
+    title = (form_data.get("title") or "").strip()
+    if title and len(title) > TITLE_MAX:
+        errors["title"] = f"Job Title must not exceed {TITLE_MAX} characters (currently {len(title)})."
+
+    # Description length (min + max)
+    description = (form_data.get("description") or "").strip()
+    if description and len(description) < DESCRIPTION_MIN:
+        errors["description"] = f"Job Description must be at least {DESCRIPTION_MIN} characters."
+    elif description and len(description) > DESCRIPTION_MAX:
+        errors["description"] = f"Job Description must not exceed {DESCRIPTION_MAX} characters (currently {len(description)})."
+
+    # Location length
+    location = (form_data.get("location") or "").strip()
+    if location and len(location) > LOCATION_MAX:
+        errors["location"] = f"Location must not exceed {LOCATION_MAX} characters (currently {len(location)})."
+
     # Job type validation
     job_type = (form_data.get("job_type") or "").strip()
     if job_type and job_type not in ALLOWED_JOB_TYPES:
@@ -360,8 +393,17 @@ def validate_job_form(form_data):
     if deadline_raw:
         try:
             deadline_date = datetime.strptime(deadline_raw, "%Y-%m-%d").date()
-            if deadline_date < date.today():
+            today = date.today()
+            if deadline_date < today:
                 errors["application_deadline"] = "Application deadline cannot be earlier than today."
+            else:
+                # SAT extra: reject unreasonably far-future dates
+                max_deadline = _add_years(today, DEADLINE_MAX_YEARS)
+                if deadline_date > max_deadline:
+                    errors["application_deadline"] = (
+                        f"Application deadline cannot be more than {DEADLINE_MAX_YEARS} years from today "
+                        f"(latest allowed: {max_deadline.strftime('%Y-%m-%d')})."
+                    )
         except ValueError:
             errors["application_deadline"] = "Application deadline format is invalid (YYYY-MM-DD required)."
 
@@ -561,6 +603,9 @@ def new_job():
             flash(f"Job posting created successfully. Job ID: {job_id} | Status: Open", "success")
             return redirect(url_for("employer_jobs"))
 
+    today_str = date.today().strftime("%Y-%m-%d")
+    max_deadline_str = (_add_years(date.today(), DEADLINE_MAX_YEARS)).strftime("%Y-%m-%d")
+
     return render_template_string(
         """
 <!doctype html>
@@ -593,14 +638,18 @@ def new_job():
           <div class="form-field {{ 'has-error' if errors.get('title') }}">
             <label class="form-label" for="title">Job Title <span class="required">*</span></label>
             <input class="form-control" type="text" id="title" name="title"
-              value="{{ form_values.title }}" placeholder="e.g., Junior Software Engineer" autocomplete="off">
+              value="{{ form_values.title }}" placeholder="e.g., Junior Software Engineer"
+              autocomplete="off" maxlength="{{ title_max }}">
+            <div class="char-hint">Max {{ title_max }} characters</div>
             {% if errors.get('title') %}<div class="field-error">{{ errors.get('title') }}</div>{% endif %}
           </div>
 
           <div class="form-field {{ 'has-error' if errors.get('description') }}">
             <label class="form-label" for="description">Job Description <span class="required">*</span></label>
             <textarea class="form-control" id="description" name="description"
-              placeholder="Enter responsibilities, requirements, and skills needed…">{{ form_values.description }}</textarea>
+              placeholder="Enter responsibilities, requirements, and skills needed…"
+              maxlength="{{ description_max }}">{{ form_values.description }}</textarea>
+            <div class="char-hint">Min {{ description_min }} · Max {{ description_max }} characters</div>
             {% if errors.get('description') %}<div class="field-error">{{ errors.get('description') }}</div>{% endif %}
           </div>
 
@@ -608,7 +657,8 @@ def new_job():
             <div class="form-field {{ 'has-error' if errors.get('location') }}">
               <label class="form-label" for="location">Location <span class="required">*</span></label>
               <input class="form-control" type="text" id="location" name="location"
-                value="{{ form_values.location }}" placeholder="e.g., Penang">
+                value="{{ form_values.location }}" placeholder="e.g., Penang"
+                maxlength="{{ location_max }}">
               {% if errors.get('location') %}<div class="field-error">{{ errors.get('location') }}</div>{% endif %}
             </div>
             <div class="form-field {{ 'has-error' if errors.get('job_type') }}">
@@ -626,7 +676,9 @@ def new_job():
           <div class="form-field {{ 'has-error' if errors.get('application_deadline') }}">
             <label class="form-label" for="application_deadline">Application Deadline <span class="required">*</span></label>
             <input class="form-control" type="date" id="application_deadline" name="application_deadline"
-              value="{{ form_values.application_deadline }}" style="max-width:220px;">
+              value="{{ form_values.application_deadline }}"
+              min="{{ today_str }}" max="{{ max_deadline_str }}" style="max-width:220px;">
+            <div class="char-hint">Between today and {{ max_deadline_str }}</div>
             {% if errors.get('application_deadline') %}<div class="field-error">{{ errors.get('application_deadline') }}</div>{% endif %}
           </div>
 
@@ -647,8 +699,11 @@ def new_job():
             Validation Rules
           </strong>
           All fields marked <span class="required">*</span> are required.<br><br>
-          Deadline must be today or in the future.<br><br>
-          On success, the job is saved with status <strong>Open</strong> and a unique Job ID.
+          Title: max {{ title_max }} chars.<br>
+          Description: {{ description_min }}–{{ description_max }} chars.<br>
+          Location: max {{ location_max }} chars.<br>
+          Deadline: today → {{ max_deadline_str }}.<br><br>
+          On success the job is saved with status <strong>Open</strong> and a unique Job ID.
         </div>
         <div class="card">
           <div class="card-title" style="font-size:14px;">Allowed Job Types</div>
@@ -666,6 +721,12 @@ def new_job():
         errors=errors,
         allowed_job_types=ALLOWED_JOB_TYPES,
         job_type_badge=job_type_badge,
+        today_str=today_str,
+        max_deadline_str=max_deadline_str,
+        title_max=TITLE_MAX,
+        location_max=LOCATION_MAX,
+        description_min=DESCRIPTION_MIN,
+        description_max=DESCRIPTION_MAX,
     )
 
 
