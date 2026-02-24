@@ -9,6 +9,28 @@ DB_PATH = "jobs.db"
 
 ALLOWED_JOB_TYPES = ["Full-time", "Part-time", "Internship", "Contract"]
 
+ALLOWED_INDUSTRIES = [
+    "Technology & IT",
+    "Finance & Banking",
+    "Healthcare & Medical",
+    "Education & Academia",
+    "Engineering & Manufacturing",
+    "Marketing & Advertising",
+    "Sales & Business Development",
+    "Human Resources",
+    "Legal & Compliance",
+    "Retail & E-commerce",
+    "Hospitality & Tourism",
+    "Construction & Real Estate",
+    "Logistics & Supply Chain",
+    "Media & Entertainment",
+    "Consulting & Professional Services",
+    "Government & Public Sector",
+    "Non-profit & NGO",
+    "Agriculture & Environment",
+    "Other",
+]
+
 # Input length limits
 TITLE_MAX       = 100
 LOCATION_MAX    = 100
@@ -322,6 +344,7 @@ def init_db():
             description TEXT NOT NULL,
             location TEXT NOT NULL,
             job_type TEXT NOT NULL,
+            industry TEXT NOT NULL DEFAULT '',
             application_deadline TEXT NOT NULL,
             status TEXT NOT NULL DEFAULT 'Open',
             created_at TEXT NOT NULL
@@ -329,6 +352,12 @@ def init_db():
         """
     )
     conn.commit()
+    # Migrate existing databases: add industry column if not yet present
+    try:
+        conn.execute("ALTER TABLE jobs ADD COLUMN industry TEXT NOT NULL DEFAULT ''")
+        conn.commit()
+    except Exception:
+        pass  # column already exists
     conn.close()
 
 
@@ -358,6 +387,7 @@ def validate_job_form(form_data):
         "description": "Job Description",
         "location": "Location",
         "job_type": "Job Type",
+        "industry": "Industry",
         "application_deadline": "Application Deadline",
     }
 
@@ -387,6 +417,11 @@ def validate_job_form(form_data):
     job_type = (form_data.get("job_type") or "").strip()
     if job_type and job_type not in ALLOWED_JOB_TYPES:
         errors["job_type"] = "Invalid or unsupported job type selected."
+
+    # Industry validation
+    industry = (form_data.get("industry") or "").strip()
+    if industry and industry not in ALLOWED_INDUSTRIES:
+        errors["industry"] = "Invalid or unsupported industry selected."
 
     # Application deadline validation
     deadline_raw = (form_data.get("application_deadline") or "").strip()
@@ -554,6 +589,7 @@ def new_job():
         "description": "",
         "location": "",
         "job_type": "",
+        "industry": "",
         "application_deadline": "",
     }
     errors = {}
@@ -564,6 +600,7 @@ def new_job():
             "description": (request.form.get("description") or "").strip(),
             "location": (request.form.get("location") or "").strip(),
             "job_type": (request.form.get("job_type") or "").strip(),
+            "industry": (request.form.get("industry") or "").strip(),
             "application_deadline": (request.form.get("application_deadline") or "").strip(),
         }
 
@@ -580,8 +617,8 @@ def new_job():
                 """
                 INSERT INTO jobs (
                     job_id, employer_id, employer_name, title, description, location,
-                    job_type, application_deadline, status, created_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    job_type, industry, application_deadline, status, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     job_id,
@@ -591,6 +628,7 @@ def new_job():
                     form_values["description"],
                     form_values["location"],
                     form_values["job_type"],
+                    form_values["industry"],
                     form_values["application_deadline"],
                     "Open",                     # SAT #8 default status
                     created_at,
@@ -673,6 +711,17 @@ def new_job():
             </div>
           </div>
 
+          <div class="form-field {{ 'has-error' if errors.get('industry') }}">
+            <label class="form-label" for="industry">Industry <span class="required">*</span></label>
+            <select class="form-control" id="industry" name="industry">
+              <option value="">— Select Industry —</option>
+              {% for ind in allowed_industries %}
+                <option value="{{ ind }}" {% if form_values.industry == ind %}selected{% endif %}>{{ ind }}</option>
+              {% endfor %}
+            </select>
+            {% if errors.get('industry') %}<div class="field-error">{{ errors.get('industry') }}</div>{% endif %}
+          </div>
+
           <div class="form-field {{ 'has-error' if errors.get('application_deadline') }}">
             <label class="form-label" for="application_deadline">Application Deadline <span class="required">*</span></label>
             <input class="form-control" type="date" id="application_deadline" name="application_deadline"
@@ -702,6 +751,7 @@ def new_job():
           Title: max {{ title_max }} chars.<br>
           Description: {{ description_min }}–{{ description_max }} chars.<br>
           Location: max {{ location_max }} chars.<br>
+          Industry: select from the list.<br>
           Deadline: today → {{ max_deadline_str }}.<br><br>
           On success the job is saved with status <strong>Open</strong> and a unique Job ID.
         </div>
@@ -727,6 +777,7 @@ def new_job():
         location_max=LOCATION_MAX,
         description_min=DESCRIPTION_MIN,
         description_max=DESCRIPTION_MAX,
+        allowed_industries=ALLOWED_INDUSTRIES,
     )
 
 
@@ -741,7 +792,7 @@ def employer_jobs():
     jobs = conn.execute(
         """
         SELECT job_id, employer_id, employer_name, title, location, job_type,
-               application_deadline, status, created_at
+               industry, application_deadline, status, created_at
         FROM jobs
         WHERE employer_id = ?
         ORDER BY created_at DESC
@@ -795,6 +846,7 @@ def employer_jobs():
               <th>Title</th>
               <th>Location</th>
               <th>Job Type</th>
+              <th>Industry</th>
               <th>Deadline</th>
               <th>Status</th>
               <th>Posted At</th>
@@ -812,6 +864,7 @@ def employer_jobs():
                   </span>
                 </td>
                 <td>{{ job_type_badge(job['job_type']) | safe }}</td>
+                <td><span class="small muted">{{ job['industry'] }}</span></td>
                 <td><span class="small muted">{{ job['application_deadline'] }}</span></td>
                 <td>
                   <span class="badge badge-green">
