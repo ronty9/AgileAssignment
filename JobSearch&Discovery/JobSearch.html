@@ -152,6 +152,55 @@
             color: #777;
             margin-top: 40px;
         }
+
+        /* FOOTER */
+
+        .footer {
+            background: #1f3c88;
+            color: white;
+            margin-top: 60px;
+        }
+
+        .footer-container {
+            width: 85%;
+            margin: auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            padding: 40px 0;
+        }
+
+        .footer h3 {
+            margin-bottom: 10px;
+        }
+
+        .footer p,
+        .footer li {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .footer ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer li {
+            margin-bottom: 6px;
+            cursor: pointer;
+        }
+
+        .footer li:hover {
+            text-decoration: underline;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+            padding: 15px;
+            font-size: 13px;
+            opacity: 0.8;
+        }
     </style>
 </head>
 
@@ -256,6 +305,51 @@
         }
 
     </script>
+
+    <!-- FOOTER -->
+
+    <footer class="footer">
+
+        <div class="footer-container">
+
+            <div>
+                <h3>JobPortal</h3>
+                <p>Your trusted platform to discover thousands of job opportunities and build your dream career.</p>
+            </div>
+
+            <div>
+                <h3>Quick Links</h3>
+                <ul>
+                    <li>Home</li>
+                    <li>Browse Jobs</li>
+                    <li>Career Advice</li>
+                    <li>Profile</li>
+                </ul>
+            </div>
+
+            <div>
+                <h3>For Employers</h3>
+                <ul>
+                    <li>Post a Job</li>
+                    <li>Search Candidates</li>
+                    <li>Recruitment Solutions</li>
+                </ul>
+            </div>
+
+            <div>
+                <h3>Contact Us</h3>
+                <p>Email: support@jobportal.com</p>
+                <p>Phone: +60 12-345 6789</p>
+                <p>Location: Kuala Lumpur, Malaysia</p>
+            </div>
+
+        </div>
+
+        <div class="footer-bottom">
+            © 2026 JobPortal. All rights reserved.
+        </div>
+
+    </footer>
 
 </body>
 
