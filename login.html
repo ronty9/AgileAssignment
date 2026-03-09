@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <title>Login</title>
+  <style>
+    :root{ --blue:#2d6cdf; --navy:#0f1b3d; --muted:#6b7280; --border:#dbe2ee; --bg:#f6f7fb; }
+    *{ box-sizing:border-box; }
+    body{ margin:0; font-family: Arial, sans-serif; background:var(--bg); color:#1f2a44; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; }
+    .card{ width:100%; max-width:560px; background:#fff; padding:28px; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,.08); }
+    .logo{ font-weight:800; font-size:56px; margin:0; text-align:center; }
+    .logo .my{ color:var(--blue); } .logo .jobs{ color:var(--navy); }
+    .tagline{ margin:6px 0 22px; color:var(--muted); font-style:italic; font-size:14px; text-align:center; }
+    h2{ margin:0 0 6px; font-size:22px; color:var(--navy); }
+    .subtitle{ margin:0 0 18px; color:var(--muted); font-size:14px; }
+    label{ display:block; margin-top:14px; font-size:14px; color:var(--navy); font-weight:700; }
+    input{ width:100%; padding:12px 14px; margin-top:8px; border:1px solid var(--border); border-radius:10px; font-size:14px; outline:none; }
+    .error{ margin-top:6px; font-size:12px; color:#b00020; }
+    .btn{ width:100%; margin-top:22px; padding:14px 16px; border:0; border-radius:999px; background:var(--blue); color:#fff; font-weight:800; cursor:pointer; font-size:14px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1 class="logo"><span class="my">MY</span>Future<span class="jobs">Jobs</span></h1>
+    <div class="tagline">Your National Employment Services Provider</div>
+    <h2>Welcome Back</h2>
+    <p class="subtitle">Login to manage your profile and apply for jobs.</p>
+    
+    {% if error_message %}
+      <div class="error" style="margin-bottom: 15px; text-align: center; font-size: 14px;">{{ error_message }}</div>
+    {% endif %}
+    
+    <form method="POST" action="/login">
+      <label>Email Address*</label>
+      <input name="email" value="{{ form.get('email','') if form else '' }}" placeholder="e.g. example@example.com">
+      {% if errors.get('email') %}<div class="error">{{ errors.get('email') }}</div>{% endif %}
+      
+      <label>Password*</label>
+      <input type="password" name="password" placeholder="Enter your password">
+      {% if errors.get('password') %}<div class="error">{{ errors.get('password') }}</div>{% endif %}
+      
+      <button class="btn" type="submit">Login</button>
+    </form>
+  </div>
+</body>
+</html>
