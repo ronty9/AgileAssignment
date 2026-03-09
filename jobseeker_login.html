@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Job Portal - Job Seeker Login</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <div class="portal-shell">
+    <header class="portal-topbar">
+      <div class="portal-brand">
+        <div class="portal-brand__logo">JP</div>
+        <div>
+          <div class="portal-brand__title">Job Portal</div>
+          <div class="portal-brand__subtitle">Job Seeker Workspace</div>
+        </div>
+      </div>
+    </header>
+
+    <main class="login-layout">
+      <section class="login-panel login-panel--hero">
+        <span class="portal-tag">Interview Schedule</span>
+        <h1 class="login-title">Stay ready for your next opportunity</h1>
+        <p class="login-text">
+          Access your interview schedule, review invitation details, and stay updated when employers make changes.
+        </p>
+
+        <div class="feature-list">
+          <div class="feature-item">
+            <div class="feature-item__icon">✓</div>
+            <div>
+              <strong>Upcoming interview overview</strong>
+              <p>See your scheduled online and physical interviews in one place.</p>
+            </div>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-item__icon">✓</div>
+            <div>
+              <strong>Updated schedule visibility</strong>
+              <p>Track the latest interview date, time, and notes after employer updates.</p>
+            </div>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-item__icon">✓</div>
+            <div>
+              <strong>Secure job seeker access</strong>
+              <p>Only your own interview invitations are shown after login.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="login-panel login-panel--form">
+        <div class="form-card-head">
+          <span class="portal-tag portal-tag--soft">Sign In</span>
+          <h2 class="form-card-title">Job Seeker Login</h2>
+          <p class="form-card-text">Enter your job seeker account details to continue.</p>
+        </div>
+
+        <form id="loginForm" class="modern-form" novalidate>
+          <div class="modern-field">
+            <label for="jobSeekerId">Job Seeker ID</label>
+            <input id="jobSeekerId" name="jobSeekerId" type="text" placeholder="e.g. JS001" />
+          </div>
+
+          <div class="modern-field">
+            <label for="jobSeekerName">Job Seeker Name</label>
+            <input id="jobSeekerName" name="jobSeekerName" type="text" placeholder="e.g. Alex Tan" />
+          </div>
+
+          <div class="modern-actions">
+            <button type="button" class="portal-btn portal-btn--secondary" id="seedDemoBtn">Load Demo Data</button>
+            <button type="submit" class="portal-btn portal-btn--primary">Login</button>
+          </div>
+
+          <div class="toast" id="toast" aria-live="polite"></div>
+        </form>
+
+        <div class="demo-users-box">
+          <div class="demo-users-box__head">
+            <h3>Demo Accounts</h3>
+            <p>Select one account to auto-fill the login form.</p>
+          </div>
+
+          <div class="demo-users-grid">
+            <button class="demo-user" data-id="JS001" data-name="Alex Tan">
+              <strong>Alex Tan</strong>
+              <span>JS001</span>
+            </button>
+
+            <button class="demo-user" data-id="JS002" data-name="Siti Nur">
+              <strong>Siti Nur</strong>
+              <span>JS002</span>
+            </button>
+
+            <button class="demo-user" data-id="JS003" data-name="John Lee">
+              <strong>John Lee</strong>
+              <span>JS003</span>
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="../js/jobseeker_login.js"></script>
+</body>
+</html>
