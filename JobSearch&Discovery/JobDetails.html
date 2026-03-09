@@ -1,0 +1,328 @@
+<script src="jobDatabase.js"></script>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Job Details</title>
+
+    <style>
+        /* PAGE TRANSITION */
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial;
+            background: #eef2f7;
+            opacity: 0;
+            animation: fadeIn 0.7s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* NAVBAR */
+
+        .navbar {
+            background: #1f3c88;
+            color: white;
+            padding: 15px 40px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        /* CONTAINER */
+
+        .container {
+            width: 70%;
+            margin: 40px auto;
+        }
+
+        /* CARD */
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        /* HEADER */
+
+        .header {
+            background: linear-gradient(135deg, #1f3c88, #39a2db);
+            color: white;
+            padding: 35px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            font-weight: bold;
+            color: #1f3c88;
+        }
+
+        /* TITLE */
+
+        .job-title {
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        .company {
+            margin-top: 5px;
+            opacity: 0.9;
+        }
+
+        /* BODY */
+
+        .body {
+            padding: 35px;
+        }
+
+        /* INFO GRID */
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .info-box {
+            background: #f5f7fb;
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        /* SECTION */
+
+        .section {
+            margin-top: 25px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        ul {
+            line-height: 1.8;
+        }
+
+        /* BUTTONS */
+
+        .buttons {
+            margin-top: 30px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            border: none;
+            padding: 12px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .apply-btn {
+            background: #27ae60;
+            color: white;
+        }
+
+        .back-btn {
+            background: #1f3c88;
+            color: white;
+        }
+
+        /* MODAL */
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            width: 350px;
+            text-align: center;
+            padding-right: 50px;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        .modal-content button {
+            margin-left: 25px;
+            margin-top: 15px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 10px;
+            background: #1f3c88;
+            color: white;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar">
+        JobPortal
+    </div>
+
+    <div class="container">
+
+        <div class="card">
+
+            <div class="header">
+
+                <div class="logo" id="logo"></div>
+
+                <div>
+                    <div id="title" class="job-title"></div>
+                    <div id="company" class="company"></div>
+                </div>
+
+            </div>
+
+            <div class="body">
+
+                <div class="info-grid">
+                    <div class="info-box"><b>Reports To:</b> <span id="report"></span></div>
+                    <div class="info-box"><b>Location:</b> <span id="location"></span></div>
+                    <div class="info-box"><b>Job Type:</b> <span id="type"></span></div>
+                    <div class="info-box"><b>Salary:</b> <span id="salary"></span></div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Description</div>
+                    <p id="description"></p>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Responsibilities</div>
+                    <ul id="responsibility"></ul>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Requirements</div>
+                    <ul id="requirements"></ul>
+                </div>
+
+                <div class="buttons">
+                    <button class="btn apply-btn" onclick="openModal()">Apply Now</button>
+                    <button class="btn back-btn" onclick="goBack()">Back to Jobs</button>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- APPLY MODAL -->
+
+    <div class="modal" id="applyModal">
+
+        <div class="modal-content">
+
+            <h3>&nbsp;&nbsp;&nbsp;&nbsp;Apply for this Job</h3>
+
+            <input type="text" placeholder="Your Name">
+            <input type="email" placeholder="Email Address">
+
+            <button onclick="submitApplication()">Submit Application</button>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        const params = new URLSearchParams(window.location.search);
+        const jobId = Number(params.get("id"));
+
+        const job = jobs.find(j => j.id === jobId);
+
+        if (!job) {
+            document.querySelector(".card").innerHTML = "<h2>Job not found</h2>";
+        }
+
+        /* DISPLAY JOB */
+
+        document.getElementById("logo").textContent = job.company[0];
+        document.getElementById("title").textContent = job.title;
+        document.getElementById("company").textContent = job.company;
+
+        document.getElementById("report").textContent = job.report;
+        document.getElementById("location").textContent = job.location;
+        document.getElementById("type").textContent = job.type;
+        document.getElementById("salary").textContent = job.salary;
+
+        document.getElementById("description").textContent = job.description;
+
+        job.responsibility.forEach(item => {
+            const li = document.createElement("li");
+            li.textContent = item;
+            document.getElementById("responsibility").appendChild(li);
+        });
+
+        job.requirements.forEach(item => {
+            const li = document.createElement("li");
+            li.textContent = item;
+            document.getElementById("requirements").appendChild(li);
+        });
+
+
+        function goBack() {
+            window.location.href = "JobSearch.html";
+        }
+
+        function openModal() {
+            document.getElementById("applyModal").style.display = "flex";
+        }
+
+        function submitApplication() {
+            alert("Application submitted successfully!");
+            document.getElementById("applyModal").style.display = "none";
+        }
+
+    </script>
+
+</body>
+
+</html>

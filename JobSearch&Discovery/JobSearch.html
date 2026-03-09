@@ -1,255 +1,262 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<title>Job Portal - Discover Jobs</title>
+    <meta charset="UTF-8">
+    <title>Job Portal - Discover Jobs</title>
 
-<style>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-/* ===== GLOBAL ===== */
-* { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f4f6fb;
+        }
 
-body {
-    margin: 0;
-    font-family: "Segoe UI", Arial, sans-serif;
-    background: #f4f6fb;
-}
+        /* NAVBAR */
+        .navbar {
+            background: #1f3c88;
+            color: white;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-/* ===== NAVBAR ===== */
-.navbar {
-    background: #1f3c88;
-    color: white;
-    padding: 15px 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+        }
 
-.logo { font-size: 22px; font-weight: bold; }
-.menu span { margin-left: 20px; cursor: pointer; }
+        .menu span {
+            margin-left: 20px;
+            cursor: pointer;
+        }
 
-/* ===== HERO ===== */
-.hero {
-    background: linear-gradient(135deg, #1f3c88, #39a2db);
-    color: white;
-    padding: 50px 20px;
-    text-align: center;
-}
+        /* HERO */
+        .hero {
+            background: linear-gradient(135deg, #1f3c88, #39a2db);
+            color: white;
+            padding: 50px 20px;
+            text-align: center;
+        }
 
-.hero h1 { margin-bottom: 10px; }
+        .hero h1 {
+            margin-bottom: 10px;
+        }
 
-/* ===== SEARCH ===== */
-.search-box {
-    position: relative;
-    margin: 25px auto;
-    max-width: 650px;
-    display: flex;
-    background: white;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
-}
+        /* SEARCH */
+        .search-box {
+            position: relative;
+            margin: 25px auto;
+            max-width: 650px;
+            display: flex;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
 
-.search-box input {
-    flex: 1;
-    border: none;
-    padding: 15px;
-    font-size: 16px;
-    outline: none;
-}
+        .search-box input {
+            flex: 1;
+            border: none;
+            padding: 15px;
+            font-size: 16px;
+            outline: none;
+        }
 
-/* Clear X */
-#clearBtn {
-    position: absolute;
-    right: 105px;
-    top: 50%;
-    transform: translateY(-50%);
-    cursor: pointer;
-    font-size: 18px;
-    color: #888;
-    display: none;
-}
+        #clearBtn {
+            position: absolute;
+            right: 105px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 18px;
+            color: #888;
+            display: none;
+        }
 
-#clearBtn:hover { color: black; }
+        #clearBtn:hover {
+            color: black;
+        }
 
-.search-box button {
-    border: none;
-    background: #1f3c88;
-    color: white;
-    padding: 0 25px;
-    cursor: pointer;
-}
+        .search-box button {
+            border: none;
+            background: #1f3c88;
+            color: white;
+            padding: 0 25px;
+            cursor: pointer;
+        }
 
-/* ===== CONTENT ===== */
-.container {
-    width: 85%;
-    margin: 30px auto;
-}
+        /* CONTENT */
+        .container {
+            width: 85%;
+            margin: 30px auto;
+        }
 
-.count { margin-bottom: 15px; font-weight: 600; }
+        .count {
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
 
-/* ===== JOB CARD ===== */
-.job-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px,1fr));
-    gap: 20px;
-}
+        /* JOB CARD */
+        .job-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
 
-.job-card {
-    background: white;
-    border-radius: 10px;
-    padding: 18px;
-    transition: 0.25s;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-}
+        .job-card {
+            background: white;
+            border-radius: 10px;
+            padding: 18px;
+            transition: 0.25s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
 
-.job-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-}
+        .job-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
 
-.job-title { font-size: 18px; font-weight: 600; }
-.company { color: #555; margin: 6px 0; }
-.salary { color: #27ae60; font-weight: bold; }
+        .job-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
 
-.job-card button {
-    margin-top: 10px;
-    background: #39a2db;
-    border: none;
-    color: white;
-    padding: 7px 14px;
-    border-radius: 5px;
-    cursor: pointer;
-}
+        .company {
+            color: #555;
+            margin: 6px 0;
+        }
 
-/* ===== EMPTY ===== */
-.empty {
-    text-align: center;
-    color: #777;
-    margin-top: 40px;
-}
+        .salary {
+            color: #27ae60;
+            font-weight: bold;
+        }
 
-</style>
+        .job-card button {
+            margin-top: 10px;
+            background: #39a2db;
+            border: none;
+            color: white;
+            padding: 7px 14px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .empty {
+            text-align: center;
+            color: #777;
+            margin-top: 40px;
+        }
+    </style>
 </head>
 
 <body>
 
-<!-- NAVBAR -->
-<div class="navbar">
-    <div class="logo">JobPortal</div>
-    <div class="menu">
-        <span>Home</span>
-        <span>Jobs</span>
-        <span>Profile</span>
+    <div class="navbar">
+        <div class="logo">JobPortal</div>
+        <div class="menu">
+            <span>Home</span>
+            <span>Jobs</span>
+            <span>Profile</span>
+        </div>
     </div>
-</div>
 
-<!-- HERO -->
-<div class="hero">
-    <h1>Discover Your Dream Career</h1>
-    <p>Search thousands of job opportunities</p>
+    <div class="hero">
+        <h1>Discover Your Dream Career</h1>
+        <p>Search thousands of job opportunities</p>
 
-    <div class="search-box">
-        <input id="searchInput" placeholder="Search job title, company or location" oninput="toggleClear()">
-        <span id="clearBtn" onclick="clearSearch()">✕</span>
-        <button onclick="searchJobs()">Search</button>
+        <div class="search-box">
+            <input id="searchInput" placeholder="Search job title, company or location" oninput="toggleClear()">
+            <span id="clearBtn" onclick="clearSearch()">✕</span>
+            <button onclick="searchJobs()">Search</button>
+        </div>
     </div>
-</div>
 
-<!-- RESULTS -->
-<div class="container">
-    <div id="count" class="count"></div>
-    <div id="results" class="job-grid"></div>
-</div>
+    <div class="container">
+        <div id="count" class="count"></div>
+        <div id="results" class="job-grid"></div>
+    </div>
 
-<script>
+    <script src="jobDatabase.js"></script>
 
-/* ===== JOB DATA ===== */
-const jobs = [
-    {id:1,title:"Frontend Developer",company:"TechSoft",location:"Kuala Lumpur",salary:"RM4500"},
-    {id:2,title:"Backend Developer",company:"CodeWorks",location:"Penang",salary:"RM5000"},
-    {id:3,title:"UI/UX Designer",company:"DesignPro",location:"Johor",salary:"RM4000"},
-    {id:4,title:"Software Engineer",company:"InnovaTech",location:"Selangor",salary:"RM5500"},
-    {id:5,title:"Data Analyst",company:"DataCorp",location:"Kuala Lumpur",salary:"RM4800"},
-    {id:6,title:"Mobile Developer",company:"AppWorld",location:"Penang",salary:"RM5200"},
-    {id:7,title:"QA Engineer",company:"Testify",location:"Melaka",salary:"RM4200"},
-    {id:8,title:"Cloud Engineer",company:"SkyNet",location:"Cyberjaya",salary:"RM6000"},
-    {id:9,title:"Business Analyst",company:"BizTech",location:"Kuala Lumpur",salary:"RM4700"},
-    {id:10,title:"System Administrator",company:"NetSecure",location:"Selangor",salary:"RM4300"},
-    {id:11,title:"DevOps Engineer",company:"DeployHub",location:"Penang",salary:"RM5800"},
-    {id:12,title:"AI Engineer",company:"FutureAI",location:"Cyberjaya",salary:"RM7000"},
-    {id:13,title:"Database Administrator",company:"DataCore",location:"Johor",salary:"RM4900"},
-    {id:14,title:"IT Support Specialist",company:"HelpDesk Pro",location:"Kuala Lumpur",salary:"RM3500"}
-];
+    <script>
 
-/* INITIAL LOAD */
-displayJobs(jobs);
-
-/* SHOW/HIDE CLEAR */
-function toggleClear(){
-    clearBtn.style.display = searchInput.value ? "block" : "none";
-}
-
-/* SEARCH */
-function searchJobs(){
-    const keyword = searchInput.value.trim();
-
-    if(keyword===""){
         displayJobs(jobs);
-        return;
-    }
 
-    const filtered = jobs.filter(job =>
-        job.title.toLowerCase().includes(keyword.toLowerCase()) ||
-        job.company.toLowerCase().includes(keyword.toLowerCase()) ||
-        job.location.toLowerCase().includes(keyword.toLowerCase())
-    );
+        function toggleClear() {
+            clearBtn.style.display = searchInput.value ? "block" : "none";
+        }
 
-    if(filtered.length===0){
-        displayEmpty(keyword);
-        return;
-    }
+        function searchJobs() {
 
-    displayJobs(filtered);
-}
+            const keyword = searchInput.value.trim().toLowerCase();
 
-/* CLEAR */
-function clearSearch(){
-    searchInput.value="";
-    toggleClear();
-    displayJobs(jobs);
-}
+            if (keyword === "") {
+                displayJobs(jobs);
+                return;
+            }
 
-/* DISPLAY */
-function displayJobs(list){
-    results.innerHTML="";
-    count.textContent=list.length+" job(s) found";
+            const filtered = jobs.filter(job =>
+                job.title.toLowerCase().includes(keyword) ||
+                job.company.toLowerCase().includes(keyword) ||
+                job.location.toLowerCase().includes(keyword)
+            );
 
-    list.forEach(job=>{
-        const card=document.createElement("div");
-        card.className="job-card";
-        card.innerHTML=`
-            <div class="job-title">${job.title}</div>
-            <div class="company">${job.company} • ${job.location}</div>
-            <div class="salary">${job.salary}</div>
-            <button onclick="viewDetails(${job.id})">View Details</button>
-        `;
-        results.appendChild(card);
-    });
-}
+            if (filtered.length === 0) {
+                displayEmpty(keyword);
+                return;
+            }
 
-/* EMPTY */
-function displayEmpty(keyword){
-    results.innerHTML=`<div class="empty">No jobs found for "<b>${keyword}</b>"</div>`;
-    count.textContent="0 jobs found";
-}
+            displayJobs(filtered);
 
-/* PLACEHOLDER FOR US4 */
-function viewDetails(id){
-    alert("Navigate to job details page → Job ID: "+id);
-}
+        }
 
-</script>
+        function clearSearch() {
+            searchInput.value = "";
+            toggleClear();
+            displayJobs(jobs);
+        }
+
+        function displayJobs(list) {
+
+            results.innerHTML = "";
+            count.textContent = list.length + " job(s) found";
+
+            list.forEach(job => {
+
+                const card = document.createElement("div");
+
+                card.className = "job-card";
+
+                card.innerHTML = `
+<div class="job-title">${job.title}</div>
+<div class="company">${job.company} • ${job.location}</div>
+<div class="salary">${job.salary}</div>
+<button onclick="viewDetails(${job.id})">View Details</button>
+`;
+
+                results.appendChild(card);
+
+            });
+
+        }
+
+        function displayEmpty(keyword) {
+            results.innerHTML = `<div class="empty">No jobs found for "<b>${keyword}</b>"</div>`;
+            count.textContent = "0 jobs found";
+        }
+
+        function viewDetails(id) {
+            window.location.href = "JobDetails.html?id=" + id;
+        }
+
+    </script>
 
 </body>
+
 </html>
