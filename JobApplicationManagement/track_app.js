@@ -118,23 +118,6 @@ function renderAppDetail() {
   `;
 }
 
-// This function mimics the Sprint 1 system sending a new application.
-// It is hidden from the UI and only triggered via the browser console.
-window.triggerAT2 = function() {
-  const newApp = {
-    id: "APP-999",
-    jobTitle: "Live Demo Job",
-    company: "University Evaluator Inc.",
-    status: "Submitted", // <--- This proves AT2
-    appliedAt: new Date().toLocaleString(),
-    lastUpdated: new Date().toLocaleString()
-  };
-  
-  mockApplications.push(newApp);
-  renderAppList();
-  console.log("✅ AT2 Passed: New application generated with default status 'Submitted'.");
-  alert("System simulated a new application coming in from Sprint 1.");
-}
-
 // Init UI
+
 renderAppList();
