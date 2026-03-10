@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <title>Login</title>
+  <title>Login - MYFutureJobs</title>
   <style>
     :root{ --blue:#2d6cdf; --navy:#0f1b3d; --muted:#6b7280; --border:#dbe2ee; --bg:#f6f7fb; }
     *{ box-sizing:border-box; }
@@ -16,6 +16,11 @@
     input{ width:100%; padding:12px 14px; margin-top:8px; border:1px solid var(--border); border-radius:10px; font-size:14px; outline:none; }
     .error{ margin-top:6px; font-size:12px; color:#b00020; }
     .btn{ width:100%; margin-top:22px; padding:14px 16px; border:0; border-radius:999px; background:var(--blue); color:#fff; font-weight:800; cursor:pointer; font-size:14px; }
+    
+    /* New styles for the Register Link */
+    .register-link { margin-top: 24px; text-align: center; font-size: 14px; color: var(--navy); }
+    .register-link a { color: var(--blue); text-decoration: none; font-weight: 700; }
+    .register-link a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
@@ -40,6 +45,11 @@
       
       <button class="btn" type="submit">Login</button>
     </form>
+
+ <div class="register-link">
+    Don't have an account? <a href="/register.py">Register Now</a>
+</div>
+    
   </div>
 </body>
 </html>
