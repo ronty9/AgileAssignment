@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Job Portal - Job Seeker Login</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <div class="portal-shell">
+    <header class="portal-topbar">
+      <div class="portal-brand">
+        <div class="portal-brand__logo">JP</div>
+        <div>
+          <div class="portal-brand__title">Job Portal</div>
+          <div class="portal-brand__subtitle">Job Seeker Workspace</div>
+        </div>
+      </div>
+    </header>
+
+    <main class="login-layout">
+      <section class="login-panel login-panel--hero">
+        <span class="portal-tag">Interview Schedule</span>
+        <h1 class="login-title">Stay ready for your next opportunity</h1>
+        <p class="login-text">
+          Access your interview schedule, review invitation details, and stay updated when employers make changes.
+        </p>
+
+        <div class="feature-list">
+          <div class="feature-item">
+            <div class="feature-item__icon">✓</div>
+            <div>
+              <strong>Upcoming interview overview</strong>
+              <p>See your scheduled online and physical interviews in one place.</p>
+            </div>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-item__icon">✓</div>
+            <div>
+              <strong>Updated schedule visibility</strong>
+              <p>Track the latest interview date, time, and notes after employer updates.</p>
+            </div>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-item__icon">✓</div>
+            <div>
+              <strong>Secure job seeker access</strong>
+              <p>Only your own interview invitations are shown after login.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="login-panel login-panel--form">
+        <div class="form-card-head">
+          <span class="portal-tag portal-tag--soft">Sign In</span>
+          <h2 class="form-card-title">Job Seeker Login</h2>
+          <p class="form-card-text">Enter your email and password to continue.</p>
+        </div>
+
+        <form id="loginForm" class="modern-form" novalidate>
+          <div class="modern-field">
+            <label for="jobSeekerEmail">Email Address</label>
+            <input id="jobSeekerEmail" name="jobSeekerEmail" type="email" placeholder="e.g. alex.tan@gmail.com" />
+          </div>
+
+          <div class="modern-field">
+            <label for="jobSeekerPassword">Password</label>
+            <input id="jobSeekerPassword" name="jobSeekerPassword" type="password" placeholder="Enter your password" />
+          </div>
+
+          <div class="modern-actions">
+            <button type="submit" class="portal-btn portal-btn--primary">Login</button>
+          </div>
+
+          <div class="toast" id="toast" aria-live="polite"></div>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <script src="../js/database.js"></script>
+  <script src="../js/jobseeker_login.js"></script>
+</body>
+</html>

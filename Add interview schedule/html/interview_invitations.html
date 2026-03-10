@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Interview Invitations (Employer)</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <div class="page">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand__logo">JP</span>
+        <span class="brand__name">Job Portal</span>
+      </div>
+
+      <nav class="nav">
+        <a class="nav__link" href="./create_interview_invitation.html">Create</a>
+        <a class="nav__link nav__link--active" href="./interview_invitations.html">Invitations</a>
+      </nav>
+
+      <div class="topbar__meta">Employer Panel</div>
+    </header>
+
+    <main class="container">
+      <section class="card">
+        <div class="listHead">
+          <div>
+            <h1 class="card__title">Interview Invitations</h1>
+            <p class="card__subtitle">Manage all scheduled invitations. Filter, search and view details.</p>
+          </div>
+
+          <a class="btn btn--primary" href="./create_interview_invitation.html">+ New Invitation</a>
+        </div>
+
+        <div class="toolbar">
+          <div class="toolbar__group">
+            <label class="toolLabel" for="q">Search</label>
+            <input id="q" class="toolInput" type="text" placeholder="Search by applicant / job title..." />
+          </div>
+
+          <div class="toolbar__group">
+            <label class="toolLabel" for="typeFilter">Type</label>
+            <select id="typeFilter" class="toolInput">
+              <option value="">All</option>
+              <option value="ONLINE">Online</option>
+              <option value="PHYSICAL">Physical</option>
+            </select>
+          </div>
+
+          <div class="toolbar__group">
+            <label class="toolLabel" for="sortBy">Sort</label>
+            <select id="sortBy" class="toolInput">
+              <option value="newest">Newest</option>
+              <option value="oldest">Oldest</option>
+              <option value="soonest">Soonest interview</option>
+            </select>
+          </div>
+
+          <div class="toolbar__group toolbar__right">
+            <button id="clearAll" class="btn btn--danger">Clear All</button>
+          </div>
+        </div>
+
+        <div id="emptyState" class="emptyState" style="display:none;">
+          <div class="emptyIcon">📅</div>
+          <h3>No invitations yet</h3>
+          <p>Create your first interview invitation to see it here.</p>
+          <a class="btn btn--primary" href="./create_interview_invitation.html">Create Invitation</a>
+        </div>
+
+        <div id="list" class="gridCards"></div>
+
+        <!-- Modal -->
+        <div id="modalBackdrop" class="modalBackdrop" style="display:none;">
+          <div class="modal">
+            <div class="modal__head">
+              <div>
+                <div class="modal__title" id="mTitle">Invitation</div>
+                <div class="modal__subtitle" id="mSub">Details</div>
+              </div>
+              <button class="iconBtn" id="mClose" aria-label="Close">✕</button>
+            </div>
+
+            <div class="modal__body" id="mBody"></div>
+
+            <div class="modal__actions">
+              <button class="btn btn--ghost" id="mClose2">Close</button>
+              <button class="btn btn--danger" id="mDelete">Delete</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="toast" id="toast" aria-live="polite"></div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>BMSE3343 Agile Assignment — Interview & Scheduling Module</span>
+    </footer>
+  </div>
+
+  <script src="../js/invitations_list.js"></script>
+</body>
+</html>
