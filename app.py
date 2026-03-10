@@ -850,13 +850,14 @@ def employer_jobs():
               <th>Deadline</th>
               <th>Status</th>
               <th>Posted At</th>
+              <th style="text-align:right;">Actions</th>
             </tr>
           </thead>
           <tbody>
             {% for job in jobs %}
               <tr>
                 <td><code>{{ job['job_id'] }}</code></td>
-                <td><strong>{{ job['title'] }}</strong></td>
+                <td><strong><a href="{{ url_for('view_job', job_id=job['job_id']) }}" style="color:inherit; text-decoration:none;">{{ job['title'] }}</a></strong></td>
                 <td>
                   <span style="display:flex;align-items:center;gap:5px;color:var(--text-sec);">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
@@ -873,6 +874,9 @@ def employer_jobs():
                   </span>
                 </td>
                 <td><span class="small muted">{{ job['created_at'] }}</span></td>
+                <td style="text-align:right;">
+                  <a class="btn-outline" style="padding:4px 10px; font-size:12px;" href="{{ url_for('view_job', job_id=job['job_id']) }}">View</a>
+                </td>
               </tr>
             {% endfor %}
           </tbody>
@@ -894,6 +898,181 @@ def employer_jobs():
 </html>
         """,
         jobs=jobs,
+        job_type_badge=job_type_badge,
+    )
+
+
+@app.route("/jobs/<job_id>")
+def view_job(job_id):
+    if not is_employer_logged_in():
+        flash("Only an authenticated employer can view job postings.", "error")
+        return redirect(url_for("home"))
+
+    conn = get_conn()
+    job = conn.execute(
+        """
+        SELECT job_id, employer_id, employer_name, title, description, location, job_type,
+               industry, application_deadline, status, created_at
+        FROM jobs
+        WHERE job_id = ? AND employer_id = ?
+        """,
+        (job_id, session["employer_id"]),
+    ).fetchone()
+    conn.close()
+
+    if not job:
+        flash("Job not found or you do not have permission to view it.", "error")
+        return redirect(url_for("employer_jobs"))
+
+    return render_template_string(
+        """
+<!doctype html>
+<html lang="en">
+<head>""" + SHARED_HEAD + """
+<style>
+  .job-hero {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: white; border-radius: var(--radius); padding: 48px 40px;
+    margin-bottom: 32px; position: relative; overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .job-hero::after {
+    content: ''; position: absolute; right: -50px; top: -100px;
+    width: 300px; height: 300px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(56,189,248,0.15) 0%, rgba(255,255,255,0) 70%);
+  }
+  .job-hero-content {
+    position: relative; z-index: 10;
+  }
+  .job-title {
+    font-size: 34px; font-weight: 800; letter-spacing: -.5px; margin-bottom: 16px; line-height: 1.2;
+  }
+  .job-meta-top {
+    display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; font-size: 15px; opacity: 0.95; align-items: center;
+  }
+  .meta-item {
+    display: flex; align-items: center; gap: 6px; font-weight: 500;
+  }
+  .job-layout {
+    display: grid; grid-template-columns: 2.2fr 1fr; gap: 28px; align-items: start;
+  }
+  @media (max-width: 768px) { .job-layout { grid-template-columns: 1fr; } }
+  .detail-section { margin-bottom: 28px; }
+  .detail-section h3 {
+    font-size: 19px; font-weight: 700; color: var(--text); margin-bottom: 16px;
+    display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); padding-bottom: 12px;
+  }
+  .description-content {
+    font-size: 15.5px; color: var(--text-sec); line-height: 1.75; white-space: pre-wrap;
+  }
+  .info-card {
+    background: white; border: 1px solid var(--border);
+    border-radius: var(--radius); box-shadow: var(--shadow-sm);
+  }
+  .info-row {
+    display: flex; justify-content: space-between; padding: 18px 20px;
+    border-bottom: 1px solid var(--border); font-size: 14px; align-items: center;
+  }
+  .info-row:last-child { border-bottom: none; }
+  .info-label { color: var(--muted); display: flex; align-items: center; gap: 8px; font-weight: 600;}
+  .info-value { font-weight: 600; color: var(--text); text-align: right; }
+  
+  /* Overwrite job-type badge colors inside hero so they are visible on dark bg */
+  .job-hero .badge { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.25); color: white; backdrop-filter: blur(4px); font-size: 13px; padding: 5px 12px;}
+</style>
+<title>{{ job['title'] }} — JobPortal</title>
+</head>
+<body>""" + NAVBAR_TEMPLATE + """
+  <div class="page" style="max-width: 1000px;">
+    <div style="margin-bottom: 20px;">
+      <a class="btn-outline" href="{{ url_for('employer_jobs') }}" style="border:none; padding:8px 0; color:var(--muted); box-shadow:none; background:transparent;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        Back to Jobs
+      </a>
+    </div>
+
+    <div class="job-hero">
+      <div class="job-hero-content">
+        <div class="job-meta-top">
+          {{ job_type_badge(job['job_type']) | safe }}
+          <span class="meta-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            {{ job['location'] }}
+          </span>
+          <span class="meta-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            {{ job['industry'] }}
+          </span>
+        </div>
+        
+        <h1 class="job-title">{{ job['title'] }}</h1>
+        
+        <div style="display:flex; gap:14px; align-items:center;">
+          <a href="#" class="btn" style="background:white; color:#0f172a; border-color:white; padding: 10px 24px; font-size:15px; font-weight:700;">
+             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+             Edit Job
+          </a>
+          <span class="badge {% if job['status'] == 'Open' %}badge-green{% else %}badge-gray{% endif %}" style="padding: 7px 16px; font-size:13px; margin-left: auto; {% if job['status'] == 'Open' %}background:rgba(34,197,94,0.2); color:#4ade80; border-color:rgba(74,222,128,0.4);{% endif %}">
+             <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:currentColor; margin-right:6px; box-shadow: 0 0 8px currentColor;"></span>
+             {{ job['status'] }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="job-layout">
+      <!-- Left Column: Description -->
+      <div>
+        <div class="card" style="padding: 36px 32px;">
+          <div class="detail-section" style="margin-bottom:0;">
+            <h3>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="muted"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+              About the Role
+            </h3>
+            <div class="description-content">{{ job['description'] }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Meta info -->
+      <div>
+        <div class="info-card">
+          <div class="info-row">
+            <span class="info-label">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              Posted On
+            </span>
+            <span class="info-value">{{ job['created_at'].split(' ')[0] if ' ' in job['created_at'] else job['created_at'] }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:#ef4444;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              Deadline
+            </span>
+            <span class="info-value" style="color:#dc2626;">{{ job['application_deadline'] }}</span>
+          </div>
+          <div class="info-row" style="background:var(--bg);">
+            <span class="info-label">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+              Job ID
+            </span>
+            <span class="info-value" style="font-family:monospace; font-size:13px; color:var(--text-sec); letter-spacing:0.5px;">{{ job['job_id'] }}</span>
+          </div>
+        </div>
+        
+        <div style="margin-top:24px; text-align:center;">
+            <p style="font-size:13.5px; color:var(--muted); margin-bottom:14px; font-weight:500;">Share this posting to attract talent</p>
+            <button class="btn" style="width:100%; justify-content:center; padding:12px; font-size:15px; background:white; color:var(--primary); border:1px solid var(--primary-border); box-shadow:var(--shadow-sm);" onclick="navigator.clipboard.writeText(window.location.href); alert('Link copied to clipboard!')" onmouseover="this.style.background='var(--primary-light)'" onmouseout="this.style.background='white'">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+              Copy Link to Job
+            </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+        """,        job=job,
         job_type_badge=job_type_badge,
     )
 
