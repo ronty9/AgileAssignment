@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Job Portal - My Interview Schedule</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <div class="portal-shell">
+    <header class="portal-topbar">
+      <div class="portal-brand">
+        <div class="portal-brand__logo">JP</div>
+        <div>
+          <div class="portal-brand__title">Job Portal</div>
+          <div class="portal-brand__subtitle">Job Seeker Workspace</div>
+        </div>
+      </div>
+
+      <nav class="portal-nav">
+        <a class="portal-nav__link portal-nav__link--active" href="./jobseeker_interview_schedule.html">My Interviews</a>
+        <a class="portal-nav__link" href="./jobseeker_login.html" id="logoutBtn">Logout</a>
+      </nav>
+    </header>
+
+    <main class="dashboard-layout">
+      <section class="dashboard-hero">
+        <div>
+          <span class="portal-tag">Interview Dashboard</span>
+          <h1 class="dashboard-title">My Interview Schedule</h1>
+          <p class="dashboard-text">
+            View your upcoming interviews, track updates, and review interview details from employers.
+          </p>
+        </div>
+
+        <div class="dashboard-hero__actions">
+          <div class="current-user-box" id="userMeta">Job Seeker</div>
+          <button class="portal-btn portal-btn--secondary" id="refreshBtn">Refresh</button>
+        </div>
+      </section>
+
+      <section class="toolbar">
+        <div class="toolbar__group">
+          <label class="toolLabel" for="q">Search</label>
+          <input id="q" class="toolInput" type="text" placeholder="Search by job title / employer..." />
+        </div>
+
+        <div class="toolbar__group">
+          <label class="toolLabel" for="typeFilter">Interview Type</label>
+          <select id="typeFilter" class="toolInput">
+            <option value="">All</option>
+            <option value="ONLINE">Online</option>
+            <option value="PHYSICAL">Physical</option>
+          </select>
+        </div>
+
+        <div class="toolbar__group">
+          <label class="toolLabel" for="statusFilter">Status</label>
+          <select id="statusFilter" class="toolInput">
+            <option value="">All</option>
+            <option value="PENDING">Pending</option>
+            <option value="ACCEPTED">Accepted</option>
+            <option value="DECLINED">Declined</option>
+          </select>
+        </div>
+
+        <div class="toolbar__group">
+          <label class="toolLabel" for="sortBy">Sort</label>
+          <select id="sortBy" class="toolInput">
+            <option value="soonest">Soonest interview</option>
+            <option value="latest">Latest interview</option>
+            <option value="newest">Newest update</option>
+          </select>
+        </div>
+      </section>
+
+      <div id="summaryBox" class="jobseekerSummaryBar"></div>
+
+      <section id="emptyState" class="empty-state-card" style="display:none;">
+        <div class="empty-state-card__icon">📅</div>
+        <h3>No interviews found</h3>
+        <p>You currently do not have any scheduled interview invitations.</p>
+      </section>
+
+      <section id="scheduleList" class="gridCards"></section>
+
+      <div id="modalBackdrop" class="modalBackdrop" style="display:none;">
+        <div class="modal">
+          <div class="modal__head">
+            <div>
+              <div class="modal__title" id="mTitle">Interview Details</div>
+              <div class="modal__subtitle" id="mSub">Interview information</div>
+            </div>
+            <button class="iconBtn" id="mClose" aria-label="Close">✕</button>
+          </div>
+
+          <div class="modal__body" id="mBody"></div>
+
+          <div class="modal__actions">
+            <button class="btn btn--ghost" id="mClose2">Close</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="toast" id="toast" aria-live="polite"></div>
+    </main>
+  </div>
+
+  <script src="../js/jobseeker_schedule.js"></script>
+</body>
+</html>
