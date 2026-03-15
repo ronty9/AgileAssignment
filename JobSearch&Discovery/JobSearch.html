@@ -17,6 +17,7 @@
         }
 
         /* NAVBAR */
+
         .navbar {
             background: #1f3c88;
             color: white;
@@ -37,6 +38,7 @@
         }
 
         /* HERO */
+
         .hero {
             background: linear-gradient(135deg, #1f3c88, #39a2db);
             color: white;
@@ -49,6 +51,7 @@
         }
 
         /* SEARCH */
+
         .search-box {
             position: relative;
             margin: 25px auto;
@@ -91,7 +94,29 @@
             cursor: pointer;
         }
 
+        /* FILTER BAR */
+
+        .filter-bar {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filter-bar label {
+            font-weight: 600;
+        }
+
+        .filter-bar select {
+            padding: 10px 12px;
+            border-radius: 6px;
+            border: none;
+            font-size: 14px;
+        }
+
         /* CONTENT */
+
         .container {
             width: 85%;
             margin: 30px auto;
@@ -102,25 +127,45 @@
             font-weight: 600;
         }
 
-        /* JOB CARD */
+        /* JOB GRID */
+
         .job-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 20px;
         }
 
+        /* JOB CARD */
+
         .job-card {
             background: white;
             border-radius: 10px;
             padding: 18px;
-            transition: 0.25s;
+            transition: all 0.35s ease;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .job-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
         }
+
+        /* ANIMATION */
+
+        .fade-enter {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .fade-enter-active {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.35s ease;
+        }
+
+        /* JOB TEXT */
 
         .job-title {
             font-size: 18px;
@@ -130,6 +175,12 @@
         .company {
             color: #555;
             margin: 6px 0;
+        }
+
+        .category {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 4px;
         }
 
         .salary {
@@ -216,14 +267,21 @@
     </div>
 
     <div class="hero">
+
         <h1>Discover Your Dream Career</h1>
         <p>Search thousands of job opportunities</p>
 
         <div class="search-box">
-            <input id="searchInput" placeholder="Search job title, company or location" oninput="toggleClear()">
+            <input id="searchInput" placeholder="Search job title, company or location" oninput="applyFilters()">
             <span id="clearBtn" onclick="clearSearch()">✕</span>
-            <button onclick="searchJobs()">Search</button>
+            <button onclick="applyFilters()">Search</button>
         </div>
+
+        <div class="filter-bar">
+            <label>Category:</label>
+            <select id="categoryFilter" onchange="applyFilters()"></select>
+        </div>
+
     </div>
 
     <div class="container">
@@ -235,29 +293,56 @@
 
     <script>
 
-        displayJobs(jobs);
+        /* INITIALIZE CATEGORY FILTER WITH JOB COUNTS */
 
-        function toggleClear() {
-            clearBtn.style.display = searchInput.value ? "block" : "none";
+        function initializeCategoryFilter() {
+
+            const select = document.getElementById("categoryFilter");
+
+            const categories = ["All", ...new Set(jobs.map(j => j.category))];
+
+            categories.forEach(cat => {
+
+                let count = cat === "All"
+                    ? jobs.length
+                    : jobs.filter(j => j.category === cat).length;
+
+                const option = document.createElement("option");
+
+                option.value = cat;
+                option.textContent = `${cat} (${count})`;
+
+                select.appendChild(option);
+
+            });
+
         }
 
-        function searchJobs() {
+        /* FILTER FUNCTION */
 
-            const keyword = searchInput.value.trim().toLowerCase();
+        function applyFilters() {
 
-            if (keyword === "") {
-                displayJobs(jobs);
-                return;
-            }
+            const keyword = document.getElementById("searchInput").value.toLowerCase().trim();
+            const category = document.getElementById("categoryFilter").value;
 
-            const filtered = jobs.filter(job =>
-                job.title.toLowerCase().includes(keyword) ||
-                job.company.toLowerCase().includes(keyword) ||
-                job.location.toLowerCase().includes(keyword)
-            );
+            clearBtn.style.display = keyword ? "block" : "none";
+
+            let filtered = jobs.filter(job => {
+
+                const matchKeyword =
+                    job.title.toLowerCase().includes(keyword) ||
+                    job.company.toLowerCase().includes(keyword) ||
+                    job.location.toLowerCase().includes(keyword);
+
+                const matchCategory =
+                    category === "All" || job.category === category;
+
+                return matchKeyword && matchCategory;
+
+            });
 
             if (filtered.length === 0) {
-                displayEmpty(keyword);
+                displayEmpty();
                 return;
             }
 
@@ -265,48 +350,67 @@
 
         }
 
-        function clearSearch() {
-            searchInput.value = "";
-            toggleClear();
-            displayJobs(jobs);
-        }
+        /* DISPLAY JOBS */
 
         function displayJobs(list) {
 
             results.innerHTML = "";
+
             count.textContent = list.length + " job(s) found";
 
             list.forEach(job => {
 
                 const card = document.createElement("div");
 
-                card.className = "job-card";
+                card.className = "job-card fade-enter";
 
                 card.innerHTML = `
                     <div class="job-title">${job.title}</div>
                     <div class="company">${job.company} • ${job.location}</div>
+                    <div class="category">Category: ${job.category}</div>
                     <div class="salary">${job.salary}</div>
                     <button onclick="viewDetails(${job.id})">View Details</button>
-                    `;
+                `;
 
                 results.appendChild(card);
+
+                setTimeout(() => {
+                    card.classList.remove("fade-enter");
+                    card.classList.add("fade-enter-active");
+                }, 10);
 
             });
 
         }
 
-        function displayEmpty(keyword) {
-            results.innerHTML = `<div class="empty">No jobs found for "<b>${keyword}</b>"</div>`;
+        /* CLEAR SEARCH */
+
+        function clearSearch() {
+            document.getElementById("searchInput").value = "";
+            document.getElementById("categoryFilter").value = "All";
+            clearBtn.style.display = "none";
+            displayJobs(jobs);
+        }
+
+        /* EMPTY RESULT */
+
+        function displayEmpty() {
+            results.innerHTML = `<div class="empty">No jobs found</div>`;
             count.textContent = "0 jobs found";
         }
+
+        /* NAVIGATION */
 
         function viewDetails(id) {
             window.location.href = "JobDetails.html?id=" + id;
         }
 
-    </script>
+        /* INITIAL LOAD */
 
-    <!-- FOOTER -->
+        initializeCategoryFilter();
+        displayJobs(jobs);
+
+    </script>
 
     <footer class="footer">
 
