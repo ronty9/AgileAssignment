@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile Details</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="profile-container">
+        <h2>Edit Profile Details</h2>
+        <div id="message-box"></div> <form id="editProfileForm">
+            <div class="section">
+                <h3>Skills</h3>
+                <div id="skills-container">
+                    </div>
+                <button type="button" class="btn-add" onclick="addSkill()">+ Add Skill</button>
+            </div>
+
+            <div class="section">
+                <h3>Education</h3>
+                <div id="education-container">
+                    </div>
+                <button type="button" class="btn-add" onclick="addEducation()">+ Add Education</button>
+            </div>
+
+            <div class="section">
+                <h3>Work Experience</h3>
+                <div id="experience-container">
+                    </div>
+                <button type="button" class="btn-add" onclick="addExperience()">+ Add Experience</button>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" onclick="window.location.href='profile.html'">Cancel</button>
+                <button type="submit" class="btn-save">Save Profile</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="../js/edit_profile.js"></script>
+</body>
+</html>
