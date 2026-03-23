@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Job Portal - Interview Invitations</title>
+  <link rel="stylesheet" href="../css/styles.css" />
+  <script src="../js/app.js" defer></script>
+</head>
+<body data-page="main" class="main-body">
+  <header class="topbar">
+    <div class="topbar__left">
+      <div class="brand">
+        <div class="brand__logo">JP</div>
+        <div>
+          <h1 class="brand__title">Job Portal</h1>
+        </div>
+      </div>
+    </div>
+
+    <nav class="topbar__center">
+      <button class="nav-pill nav-pill--ghost" id="openCreateBtnTop" type="button">Create</button>
+      <button class="nav-pill nav-pill--active" type="button">Invitations</button>
+    </nav>
+
+    <div class="topbar__right">
+      <span class="panel-label">Employer Panel</span>
+      <div class="user-chip">
+        <span id="employerName">Employer</span>
+      </div>
+      <button id="logoutBtn" class="btn btn-outline btn-small" type="button">Logout</button>
+    </div>
+  </header>
+
+  <main class="page-wrap">
+    <section class="dashboard-card">
+      <div class="dashboard-header">
+        <div>
+          <h2>Interview Invitations</h2>
+          <p>Manage all scheduled invitations. Create, filter, search and view details.</p>
+        </div>
+
+        <button id="openCreateBtn" class="btn btn-primary btn-large" type="button">
+          + New Invitation
+        </button>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-box">
+          <span class="stat-label">Total Invitations</span>
+          <strong id="totalInvitations">0</strong>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">Pending</span>
+          <strong id="pendingInvitations">0</strong>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">Online</span>
+          <strong id="onlineInvitations">0</strong>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">Physical</span>
+          <strong id="physicalInvitations">0</strong>
+        </div>
+      </div>
+
+      <section class="filter-panel">
+        <div class="input-group">
+          <label for="searchInput">Search</label>
+          <input id="searchInput" type="text" placeholder="Search by applicant / job title..." />
+        </div>
+
+        <div class="input-group">
+          <label for="typeFilter">Type</label>
+          <select id="typeFilter">
+            <option value="All">All</option>
+            <option value="Online">Online</option>
+            <option value="Physical">Physical</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label for="sortFilter">Sort</label>
+          <select id="sortFilter">
+            <option value="Newest">Newest</option>
+            <option value="Oldest">Oldest</option>
+            <option value="Applicant">Applicant A-Z</option>
+          </select>
+        </div>
+
+        <div class="filter-action">
+          <button id="clearFiltersBtn" class="btn btn-soft-danger" type="button">Clear All</button>
+        </div>
+      </section>
+
+      <section id="cardsContainer" class="cards-grid"></section>
+    </section>
+  </main>
+
+  <!-- Create/Edit Modal -->
+  <div id="formModal" class="modal">
+    <div class="modal__backdrop" data-close="true"></div>
+    <div class="modal__panel modal__panel--large">
+      <div class="modal__header">
+        <div>
+          <h3 id="formModalTitle">Create Interview Invitation</h3>
+          <p>Fill in the interview details below.</p>
+        </div>
+        <button class="icon-btn" type="button" data-close="true">&times;</button>
+      </div>
+
+      <form id="invitationForm" class="modal__body form-grid">
+        <input type="hidden" id="invitationId" />
+
+        <div class="input-group input-group--full">
+          <label for="applicationId">Job Application <span class="required">*</span></label>
+          <select id="applicationId" required></select>
+          <small class="hint">The selected application will automatically link the correct job seeker and job title.</small>
+        </div>
+
+        <div class="preview-box input-group--full">
+          <div class="preview-item">
+            <span>Applicant</span>
+            <strong id="previewApplicant">-</strong>
+          </div>
+          <div class="preview-item">
+            <span>Job Title</span>
+            <strong id="previewJobTitle">-</strong>
+          </div>
+          <div class="preview-item">
+            <span>Status</span>
+            <strong id="previewStatus">Pending</strong>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label for="scheduledAt">Interview Date & Time <span class="required">*</span></label>
+          <input id="scheduledAt" type="datetime-local" required />
+        </div>
+
+        <div class="input-group">
+          <label for="interviewType">Interview Type <span class="required">*</span></label>
+          <select id="interviewType" required>
+            <option value="">Select type</option>
+            <option value="Online">Online</option>
+            <option value="Physical">Physical</option>
+          </select>
+        </div>
+
+        <div id="onlineField" class="input-group input-group--full hidden">
+          <label for="meetingLink">Meeting Link <span class="required">*</span></label>
+          <input id="meetingLink" type="url" placeholder="https://meet.google.com/..." />
+        </div>
+
+        <div id="physicalField" class="input-group input-group--full hidden">
+          <label for="location">Location / Address <span class="required">*</span></label>
+          <textarea id="location" rows="3" placeholder="Enter full interview location or address"></textarea>
+        </div>
+
+        <div class="input-group input-group--full">
+          <label for="notes">Notes</label>
+          <textarea id="notes" rows="4" placeholder="Add notes or interview instructions"></textarea>
+        </div>
+
+        <p id="formMessage" class="form-message input-group--full"></p>
+
+        <div class="modal__footer input-group--full">
+          <button id="cancelFormBtn" class="btn btn-outline" type="button">Cancel</button>
+          <button id="saveInvitationBtn" class="btn btn-primary" type="submit">Save Invitation</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- View Modal -->
+  <div id="viewModal" class="modal">
+    <div class="modal__backdrop" data-close-view="true"></div>
+    <div class="modal__panel">
+      <div class="modal__header">
+        <div>
+          <h3 id="viewJobTitle">Interview Details</h3>
+          <p id="viewApplicantSub">Applicant: -</p>
+        </div>
+        <button class="icon-btn" type="button" data-close-view="true">&times;</button>
+      </div>
+
+      <div class="modal__body details-list">
+        <div class="detail-row">
+          <span>Date & Time</span>
+          <strong id="viewDateTime">-</strong>
+        </div>
+
+        <div class="detail-row">
+          <span>Type</span>
+          <strong id="viewType">-</strong>
+        </div>
+
+        <div class="detail-row">
+          <span>Location / Link</span>
+          <strong id="viewDetails">-</strong>
+        </div>
+
+        <div class="detail-row">
+          <span>Status</span>
+          <strong id="viewStatus">-</strong>
+        </div>
+
+        <div class="detail-row detail-row--notes">
+          <span>Notes</span>
+          <strong id="viewNotes">-</strong>
+        </div>
+      </div>
+
+      <div class="modal__footer">
+        <button id="closeViewBtn" class="btn btn-outline" type="button">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+</body>
+</html>
