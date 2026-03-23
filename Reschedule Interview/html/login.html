@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Job Portal - Employer Login</title>
+  <link rel="stylesheet" href="../css/styles.css" />
+  <script src="../js/app.js" defer></script>
+</head>
+<body data-page="login" class="login-body">
+  <div class="login-shell">
+    <div class="login-left">
+      <div class="brand brand--large">
+        <div class="brand__logo">JP</div>
+        <div>
+          <h1 class="brand__title">Job Portal</h1>
+          <p class="brand__subtitle">Employer Interview & Scheduling Module</p>
+        </div>
+      </div>
+
+      <div class="hero-card">
+        <span class="hero-badge">Sprint 3 Feature</span>
+        <h2>Create and manage interview invitations with confidence.</h2>
+        <p>
+          A modern scheduling experience for employers to create, view, and update
+          interview invitations while keeping applicants properly linked to their job applications.
+        </p>
+
+        <div class="hero-features">
+          <div class="hero-feature">
+            <span>✓</span>
+            <p>Employer-only secure access</p>
+          </div>
+          <div class="hero-feature">
+            <span>✓</span>
+            <p>Online and physical interview validation</p>
+          </div>
+          <div class="hero-feature">
+            <span>✓</span>
+            <p>Pending invitation tracking</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="login-right">
+      <div class="auth-card">
+        <div class="auth-card__header">
+          <h2>Employer Login</h2>
+          <p>Sign in to manage interview invitations and schedules.</p>
+        </div>
+
+        <form id="loginForm" class="auth-form">
+          <div class="input-group">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="Enter employer email" required />
+          </div>
+
+          <div class="input-group">
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" placeholder="Enter password" required />
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-full">Login</button>
+          <p id="loginMessage" class="form-message"></p>
+        </form>
+
+        <!-- <div class="demo-box">
+          <h3>Demo accounts</h3>
+          <p><strong>Employer 1:</strong> hr@pixelforge.com / employer123</p>
+          <p><strong>Employer 2:</strong> recruiter@novaedge.com / employer123</p>
+          <p><strong>Job seeker test:</strong> siti@example.com / seeker123</p>
+          <small>Only employer accounts can access the interview invitation page.</small>
+        </div> -->
+      </div>
+    </div>
+  </div>
+</body>
+</html>
