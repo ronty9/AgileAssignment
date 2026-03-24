@@ -1,0 +1,32 @@
+name: Automated Unit Tests
+
+# This tells GitHub WHEN to run the tests
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+# This tells GitHub WHAT to do
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Grab your code from the repository
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    # 2. Set up the Node.js environment to run JavaScript
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+
+    # 3. Install Jest and any other dependencies
+    - name: Install Dependencies
+      run: npm install
+
+    # 4. Run the actual Jest tests!
+    - name: Run Jest Tests
+      run: npm test
