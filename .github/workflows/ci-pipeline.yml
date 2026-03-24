@@ -1,0 +1,31 @@
+name: Automated Unit Tests (CI)
+
+# This tells the pipeline to run every time you push code to the main branch
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Grabs your code from GitHub
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    # 2. Sets up the JavaScript (Node.js) environment
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    # 3. Installs Jest and any other dependencies
+    - name: Install Dependencies
+      run: npm install
+
+    # 4. Runs your automated unit tests!
+    - name: Run Jest Tests
+      run: npm test
