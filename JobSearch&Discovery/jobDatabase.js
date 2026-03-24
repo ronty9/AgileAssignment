@@ -26,7 +26,7 @@ const jobs = [
             "Familiarity with Git version control systems",
             "Basic knowledge of UI/UX principles",
             "Strong debugging and problem-solving skills",
-            "Bachelor’s degree in Computer Science or related field"
+            "Bachelor's degree in Computer Science or related field"
         ]
     },
 
@@ -56,7 +56,7 @@ const jobs = [
             "Experience with Git and collaborative development",
             "Strong analytical and debugging skills",
             "Knowledge of microservices architecture is a plus",
-            "Bachelor’s degree in Computer Science or related discipline"
+            "Bachelor's degree in Computer Science or related discipline"
         ]
     },
 
@@ -116,7 +116,7 @@ const jobs = [
             "Understanding of system architecture and design patterns",
             "Familiarity with version control systems like Git",
             "Strong problem-solving and analytical skills",
-            "Bachelor’s degree in Computer Science or related field"
+            "Bachelor's degree in Computer Science or related field"
         ]
     },
 
@@ -146,7 +146,7 @@ const jobs = [
             "Ability to interpret complex data sets",
             "Strong communication and presentation skills",
             "Experience with Python or R is a plus",
-            "Bachelor’s degree in Data Science, Statistics, or related field"
+            "Bachelor's degree in Data Science, Statistics, or related field"
         ]
     },
 
@@ -176,7 +176,7 @@ const jobs = [
             "Experience with Git version control",
             "Strong debugging and troubleshooting skills",
             "Knowledge of UI design for mobile platforms",
-            "Bachelor’s degree in Computer Science or related field"
+            "Bachelor's degree in Computer Science or related field"
         ]
     },
 
@@ -206,7 +206,7 @@ const jobs = [
             "Attention to detail and analytical thinking",
             "Experience with Agile development processes",
             "Basic programming knowledge is a plus",
-            "Bachelor’s degree in Computer Science or related field"
+            "Bachelor's degree in Computer Science or related field"
         ]
     },
 
@@ -236,7 +236,7 @@ const jobs = [
             "Experience with infrastructure automation tools",
             "Knowledge of container technologies",
             "Strong troubleshooting skills",
-            "Bachelor’s degree in Computer Science or related field"
+            "Bachelor's degree in Computer Science or related field"
         ]
     },
 
@@ -266,7 +266,7 @@ const jobs = [
             "Knowledge of project management methodologies",
             "Ability to work with cross-functional teams",
             "Experience with requirement documentation tools",
-            "Bachelor’s degree in Business or IT-related field"
+            "Bachelor's degree in Business or IT-related field"
         ]
     },
 
@@ -296,7 +296,7 @@ const jobs = [
             "Experience with virtualization technologies",
             "Strong troubleshooting skills",
             "Ability to work under pressure",
-            "Bachelor’s degree in IT or related field"
+            "Bachelor's degree in IT or related field"
         ]
     },
 
@@ -326,7 +326,7 @@ const jobs = [
             "Understanding of cloud infrastructure",
             "Experience with monitoring tools",
             "Problem-solving and troubleshooting skills",
-            "Bachelor’s degree in Computer Science or related field"
+            "Bachelor's degree in Computer Science or related field"
         ]
     },
 
@@ -356,7 +356,7 @@ const jobs = [
             "Understanding of data preprocessing techniques",
             "Experience with large datasets",
             "Strong analytical thinking",
-            "Bachelor’s or Master’s degree in AI, Data Science, or related field"
+            "Bachelor's or Master’s degree in AI, Data Science, or related field"
         ]
     },
 
@@ -386,7 +386,7 @@ const jobs = [
             "Experience with backup and recovery procedures",
             "Strong analytical skills",
             "Ability to manage large datasets",
-            "Bachelor’s degree in Computer Science or related field"
+            "Bachelor's degree in Computer Science or related field"
         ]
     },
 
