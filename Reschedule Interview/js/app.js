@@ -553,3 +553,75 @@ function deleteInvitation(invitationId) {
   closeViewModal();
   showToast("Invitation deleted successfully.");
 }
+
+function findUserById(userId) {
+  return state.db.users.find((user) => user.id === userId);
+}
+
+function findApplicationById(applicationId) {
+  return state.db.applications.find((app) => app.id === applicationId);
+}
+
+function findInvitationById(invitationId) {
+  return state.db.invitations.find((item) => item.id === invitationId);
+}
+
+function generateId(prefix) {
+  return `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+}
+
+function formatDateTime(dateString) {
+  const date = new Date(dateString);
+  return date.toLocaleString("en-MY", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit"
+  });
+}
+
+function toDatetimeLocalValue(dateString) {
+  const date = new Date(dateString);
+  const pad = (value) => String(value).padStart(2, "0");
+
+  const year = date.getFullYear();
+  const month = pad(date.getMonth() + 1);
+  const day = pad(date.getDate());
+  const hour = pad(date.getHours());
+  const minute = pad(date.getMinutes());
+
+  return `${year}-${month}-${day}T${hour}:${minute}`;
+}
+
+function isValidHttpUrl(value) {
+  try {
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+function showToast(message) {
+  const toast = document.getElementById("toast");
+  if (!toast) return;
+
+  toast.textContent = message;
+  toast.classList.add("show");
+
+  clearTimeout(state.toastTimer);
+  state.toastTimer = setTimeout(() => {
+    toast.classList.remove("show");
+  }, 2600);
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
