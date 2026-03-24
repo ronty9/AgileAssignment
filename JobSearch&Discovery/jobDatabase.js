@@ -421,3 +421,7 @@ const jobs = [
     }
 
 ];
+
+if (typeof window !== 'undefined') {
+    window.jobs = jobs;
+}
