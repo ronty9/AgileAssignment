@@ -1229,6 +1229,75 @@ def edit_job(job_id):
 <!doctype html>
 <html lang="en">
 <head>""" + SHARED_HEAD + """<title>Edit Job Posting — JobPortal</title>
+<style>
+  .edit-hero {
+    margin-bottom: 16px;
+    border: 1px solid var(--primary-border);
+    background: linear-gradient(130deg, #eff6ff 0%, #f8fbff 60%, #ffffff 100%);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+  }
+  .edit-hero-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    background: #dbeafe;
+    color: #1e40af;
+    border: 1px solid #bfdbfe;
+  }
+  .edit-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.75fr);
+    gap: 16px;
+    align-items: start;
+  }
+  .edit-card {
+    border-top: 4px solid var(--primary);
+  }
+  .sticky-side {
+    position: sticky;
+    top: calc(var(--navbar-h) + 14px);
+  }
+  .mini-list {
+    margin-top: 12px;
+    list-style: none;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: #fff;
+    overflow: hidden;
+  }
+  .mini-list li {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 12px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border);
+  }
+  .mini-list li:last-child {
+    border-bottom: 0;
+  }
+  .mini-list strong {
+    color: var(--text-sec);
+    font-weight: 600;
+  }
+  @media (max-width: 980px) {
+    .edit-layout {
+      grid-template-columns: 1fr;
+    }
+    .sticky-side {
+      position: static;
+    }
+  }
+</style>
 </head>
 <body>""" + NAVBAR_TEMPLATE + """
   <div class="page">
@@ -1243,8 +1312,16 @@ def edit_job(job_id):
       </div>
     </div>
 
-    <div style="display:grid;grid-template-columns:1.5fr 0.75fr;gap:16px;align-items:start;">
-      <div class="card">
+    <div class="edit-hero">
+      <span class="edit-hero-chip">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+        Editing Mode
+      </span>
+      <span class="small muted">Make updates and save to publish them immediately to this job posting.</span>
+    </div>
+
+    <div class="edit-layout">
+      <div class="card edit-card">
         {% if errors %}
           <div class="error-summary">
             <strong>Please fix the following errors before submitting:</strong>
@@ -1256,27 +1333,30 @@ def edit_job(job_id):
           <div class="form-field {{ 'has-error' if errors.get('title') }}">
             <label class="form-label" for="title">Job Title <span class="required">*</span></label>
             <input class="form-control" type="text" id="title" name="title"
+              data-counter="title_count"
               value="{{ form_values.title }}" placeholder="e.g., Junior Software Engineer"
               autocomplete="off" maxlength="{{ title_max }}">
-            <div class="char-hint">Max {{ title_max }} characters</div>
+            <div class="char-hint"><span id="title_count"></span> / {{ title_max }} characters</div>
             {% if errors.get('title') %}<div class="field-error">{{ errors.get('title') }}</div>{% endif %}
           </div>
 
           <div class="form-field {{ 'has-error' if errors.get('description') }}">
             <label class="form-label" for="description">Job Description <span class="required">*</span></label>
             <textarea class="form-control" id="description" name="description"
+              data-counter="description_count"
               placeholder="Enter responsibilities, duties, and what the role involves…"
               maxlength="{{ description_max }}">{{ form_values.description }}</textarea>
-            <div class="char-hint">Min {{ description_min }} · Max {{ description_max }} characters</div>
+            <div class="char-hint">Min {{ description_min }} · <span id="description_count"></span> / {{ description_max }} characters</div>
             {% if errors.get('description') %}<div class="field-error">{{ errors.get('description') }}</div>{% endif %}
           </div>
 
           <div class="form-field {{ 'has-error' if errors.get('requirements') }}">
             <label class="form-label" for="requirements">Job Requirements <span class="required">*</span></label>
             <textarea class="form-control" id="requirements" name="requirements"
+              data-counter="requirements_count"
               placeholder="Enter skills, qualifications, experience, and other requirements…"
               maxlength="{{ requirements_max }}">{{ form_values.requirements }}</textarea>
-            <div class="char-hint">Min {{ description_min }} · Max {{ requirements_max }} characters</div>
+            <div class="char-hint">Min {{ description_min }} · <span id="requirements_count"></span> / {{ requirements_max }} characters</div>
             {% if errors.get('requirements') %}<div class="field-error">{{ errors.get('requirements') }}</div>{% endif %}
           </div>
 
@@ -1330,7 +1410,7 @@ def edit_job(job_id):
         </form>
       </div>
 
-      <div>
+      <div class="sticky-side">
         <div class="sidebar-note">
           <strong>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline;vertical-align:middle;margin-right:4px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -1340,9 +1420,31 @@ def edit_job(job_id):
           Deadline must be between today and {{ max_deadline_str }}.<br>
           Existing job ID and status remain unchanged.
         </div>
+        <ul class="mini-list">
+          <li><strong>Job ID</strong><span>{{ job_id }}</span></li>
+          <li><strong>Employer</strong><span>{{ session.get('employer_name') }}</span></li>
+          <li><strong>Status</strong><span>Open/Closed unchanged</span></li>
+        </ul>
       </div>
     </div>
   </div>
+  <script>
+    (function () {
+      var fields = document.querySelectorAll('[data-counter]');
+      fields.forEach(function (field) {
+        var counterId = field.getAttribute('data-counter');
+        var target = document.getElementById(counterId);
+        if (!target) return;
+
+        var update = function () {
+          target.textContent = String(field.value.length);
+        };
+
+        update();
+        field.addEventListener('input', update);
+      });
+    })();
+  </script>
 </body>
 </html>
         """,
