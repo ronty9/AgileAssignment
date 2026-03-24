@@ -4,7 +4,7 @@
   "description": "",
   "main": "filter.js",
   "scripts": {
-    "test": "jest"
+    "test": "npx jest"
   },
   "repository": {
     "type": "git",
@@ -18,7 +18,7 @@
     "url": "https://github.com/stfd9/AgileAssignment/issues"
   },
   "homepage": "https://github.com/stfd9/AgileAssignment#readme",
-  "dependencies": {
+  "devDependencies": {
     "jest": "^30.3.0"
   }
 }
