@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Job Portal - Discover Jobs</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f4f6fb;
+        }
+
+        /* NAVBAR */
+
+        .navbar {
+            background: #1f3c88;
+            color: white;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .menu span {
+            margin-left: 20px;
+            cursor: pointer;
+        }
+
+        /* HERO */
+
+        .hero {
+            background: linear-gradient(135deg, #1f3c88, #39a2db);
+            color: white;
+            padding: 50px 20px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            margin-bottom: 10px;
+        }
+
+        /* SEARCH */
+
+        .search-box {
+            position: relative;
+            margin: 25px auto;
+            max-width: 650px;
+            display: flex;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .search-box input {
+            flex: 1;
+            border: none;
+            padding: 15px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        #clearBtn {
+            position: absolute;
+            right: 105px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 18px;
+            color: #888;
+            display: none;
+        }
+
+        #clearBtn:hover {
+            color: black;
+        }
+
+        .search-box button {
+            border: none;
+            background: #1f3c88;
+            color: white;
+            padding: 0 25px;
+            cursor: pointer;
+        }
+
+        /* FILTER BAR */
+
+        .filter-bar {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filter-bar label {
+            font-weight: 600;
+        }
+
+        .filter-bar select {
+            padding: 10px 12px;
+            border-radius: 6px;
+            border: none;
+            font-size: 14px;
+        }
+
+        /* CONTENT */
+
+        .container {
+            width: 85%;
+            margin: 30px auto;
+        }
+
+        .count {
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        /* JOB GRID */
+
+        .job-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        /* JOB CARD */
+
+        .job-card {
+            background: white;
+            border-radius: 10px;
+            padding: 18px;
+            transition: all 0.35s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .job-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        /* ANIMATION */
+
+        .fade-enter {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .fade-enter-active {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.35s ease;
+        }
+
+        /* JOB TEXT */
+
+        .job-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .company {
+            color: #555;
+            margin: 6px 0;
+        }
+
+        .category {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 4px;
+        }
+
+        .salary {
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .job-card button {
+            margin-top: 10px;
+            background: #39a2db;
+            border: none;
+            color: white;
+            padding: 7px 14px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .empty {
+            text-align: center;
+            color: #777;
+            margin-top: 40px;
+        }
+
+        /* FOOTER */
+
+        .footer {
+            background: #1f3c88;
+            color: white;
+            margin-top: 60px;
+        }
+
+        .footer-container {
+            width: 85%;
+            margin: auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            padding: 40px 0;
+        }
+
+        .footer h3 {
+            margin-bottom: 10px;
+        }
+
+        .footer p,
+        .footer li {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .footer ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer li {
+            margin-bottom: 6px;
+            cursor: pointer;
+        }
+
+        .footer li:hover {
+            text-decoration: underline;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+            padding: 15px;
+            font-size: 13px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar">
+        <div class="logo">JobPortal</div>
+        <div class="menu">
+            <span>Home</span>
+            <span>Jobs</span>
+            <span>Profile</span>
+        </div>
+    </div>
+
+    <div class="hero">
+
+        <h1>Discover Your Dream Career</h1>
+        <p>Search thousands of job opportunities</p>
+
+        <div class="search-box">
+            <input id="searchInput" placeholder="Search job title, company or location" oninput="applyFilters()">
+            <span id="clearBtn" onclick="clearSearch()">✕</span>
+            <button onclick="applyFilters()">Search</button>
+        </div>
+
+        <div class="filter-bar">
+            <label>Category:</label>
+            <select id="categoryFilter" onchange="applyFilters()"></select>
+        </div>
+
+    </div>
+
+    <div class="container">
+        <div id="count" class="count"></div>
+        <div id="results" class="job-grid"></div>
+    </div>
+
+    <script src="jobDatabase.js"></script>
+    <script src="filter.js"></script>
+
+    <script>
+
+        /* INITIALIZE CATEGORY FILTER WITH JOB COUNTS */
+
+        function initializeCategoryFilter() {
+
+            const select = document.getElementById("categoryFilter");
+
+            const categories = ["All", ...new Set(jobs.map(j => j.category))];
+
+            categories.forEach(cat => {
+
+                let count = cat === "All"
+                    ? jobs.length
+                    : jobs.filter(j => j.category === cat).length;
+
+                const option = document.createElement("option");
+
+                option.value = cat;
+                option.textContent = `${cat} (${count})`;
+
+                select.appendChild(option);
+
+            });
+
+        }
+
+        /* FILTER JOBs FUNCTION */
+
+        function applyFilters() {
+
+            const keyword = document.getElementById("searchInput").value.toLowerCase().trim();
+            const category = document.getElementById("categoryFilter").value;
+
+            clearBtn.style.display = keyword ? "block" : "none";
+
+            let filtered = filterJobs(jobs, keyword, category);
+
+            if (filtered.length === 0) {
+                displayEmpty();
+                return;
+            }
+
+            displayJobs(filtered);
+
+        }
+
+        /* DISPLAY JOBS */
+
+        function displayJobs(list) {
+
+            results.innerHTML = "";
+
+            count.textContent = list.length + " job(s) found";
+
+            list.forEach(job => {
+
+                const card = document.createElement("div");
+
+                card.className = "job-card fade-enter";
+
+                card.innerHTML = `
+                    <div class="job-title">${job.title}</div>
+                    <div class="company">${job.company} • ${job.location}</div>
+                    <div class="category">Category: ${job.category}</div>
+                    <div class="salary">${job.salary}</div>
+                    <button onclick="viewDetails(${job.id})">View Details</button>
+                `;
+
+                results.appendChild(card);
+
+                setTimeout(() => {
+                    card.classList.remove("fade-enter");
+                    card.classList.add("fade-enter-active");
+                }, 10);
+
+            });
+
+        }
+
+        /* CLEAR SEARCH */
+
+        function clearSearch() {
+            document.getElementById("searchInput").value = "";
+            document.getElementById("categoryFilter").value = "All";
+            clearBtn.style.display = "none";
+            displayJobs(jobs);
+        }
+
+        /* EMPTY RESULT */
+
+        function displayEmpty() {
+            results.innerHTML = `<div class="empty">No jobs found</div>`;
+            count.textContent = "0 jobs found";
+        }
+
+        /* NAVIGATION */
+
+        function viewDetails(id) {
+            window.location.href = "JobDetails.html?id=" + id;
+        }
+
+        /* INITIAL LOAD */
+
+        initializeCategoryFilter();
+        displayJobs(jobs);
+
+    </script>
+
+    <footer class="footer">
+
+        <div class="footer-container">
+
+            <div>
+                <h3>JobPortal</h3>
+                <p>Your trusted platform to discover thousands of job opportunities and build your dream career.</p>
+            </div>
+
+            <div>
+                <h3>Quick Links</h3>
+                <ul>
+                    <li>Home</li>
+                    <li>Browse Jobs</li>
+                    <li>Career Advice</li>
+                    <li>Profile</li>
+                </ul>
+            </div>
+
+            <div>
+                <h3>For Employers</h3>
+                <ul>
+                    <li>Post a Job</li>
+                    <li>Search Candidates</li>
+                    <li>Recruitment Solutions</li>
+                </ul>
+            </div>
+
+            <div>
+                <h3>Contact Us</h3>
+                <p>Email: support@jobportal.com</p>
+                <p>Phone: +60 12-345 6789</p>
+                <p>Location: Kuala Lumpur, Malaysia</p>
+            </div>
+
+        </div>
+
+        <div class="footer-bottom">
+            © 2026 JobPortal. All rights reserved.
+        </div>
+
+    </footer>
+
+</body>
+
+</html>

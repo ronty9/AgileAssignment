@@ -1,0 +1,24 @@
+{
+  "name": "agileassignment",
+  "version": "1.0.0",
+  "description": "",
+  "main": "filter.js",
+  "scripts": {
+    "test": "npx jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stfd9/AgileAssignment.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/stfd9/AgileAssignment/issues"
+  },
+  "homepage": "https://github.com/stfd9/AgileAssignment#readme",
+  "devDependencies": {
+    "jest": "^30.3.0"
+  }
+}
