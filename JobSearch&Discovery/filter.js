@@ -18,8 +18,9 @@ function filterJobs(jobs, keyword, category){
 
 }
 
-// ✅ THIS LINE IS CRITICAL
-window.filterJobs = filterJobs;
+if (typeof window !== 'undefined') {
+    window.filterJobs = filterJobs;
+}
 
 // for Jest (CI)
 if (typeof module !== "undefined") {
