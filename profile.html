@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>View Profile</title>
+  <link rel="stylesheet" href="../css/profile.css">
+</head>
+<body>
+  
+  <nav class="navbar">
+    <a href="home.html" class="logo"><span class="logo-icon">✨</span>MYFutureJobs</a>
+  </nav>
+
+  <div class="profile-wrap">
+    <div class="profile-card">
+      <div class="banner"></div>
+      <div class="profile-header">
+        <div class="avatar-wrapper">
+          <img src="https://ui-avatars.com/api/?name=Ng+Ming+Shi&background=4f46e5&color=fff" class="avatar-large" alt="Avatar">
+          <div class="user-info">
+            <h1 id="viewName">Loading...</h1>
+            <p id="viewEmail">mingshi0125@gmail.com</p>
+          </div>
+        </div>
+        <a href="edit_profile.html" class="btn-edit">Edit Profile</a>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <h3>Skills</h3>
+      <div class="skills-container" id="viewSkills">
+        <span class="empty-state">No skills added yet. Click Edit Profile to add some.</span>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <h3>Education</h3>
+      <div id="viewEducation">
+        <span class="empty-state">No education added yet. Click Edit Profile to add some.</span>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <h3>Work Experience</h3>
+      <div id="viewExperience">
+        <span class="empty-state">No work experience added yet. Click Edit Profile to add some.</span>
+      </div>
+    </div>
+  </div>
+  
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      // 1. Load Name & Contact Info
+      const name = sessionStorage.getItem('userName') || "Ng Ming Shi";
+      const phone = sessionStorage.getItem('userPhone') || "0123456789";
+      document.getElementById('viewName').innerText = name;
+      document.getElementById('viewEmail').innerText = `mingshi0125@gmail.com • ${phone}`;
+
+      // 2. Load Skills
+      const skillsStr = sessionStorage.getItem("userSkills");
+      if (skillsStr) {
+          const skills = JSON.parse(skillsStr);
+          if (skills.length > 0) {
+              const skillsBox = document.getElementById("viewSkills");
+              skillsBox.innerHTML = ""; // Clear empty state text
+              skills.forEach(skill => {
+                  // Creates the tag UI for each skill
+                  skillsBox.innerHTML += `<span class="skill-tag">${skill}</span>`;
+              });
+          }
+      }
+
+      // 3. Load Education
+      const eduStr = sessionStorage.getItem("userEdu");
+      if (eduStr) {
+          const edus = JSON.parse(eduStr);
+          if (edus.length > 0) {
+              const eduBox = document.getElementById("viewEducation");
+              eduBox.innerHTML = ""; 
+              edus.forEach(edu => {
+                  eduBox.innerHTML += `
+                      <div class="info-block">
+                          <div class="info-title">${edu.inst}</div>
+                          <div class="info-desc">${edu.lvl} • Class of ${edu.yr}</div>
+                      </div>`;
+              });
+          }
+      }
+
+      // 4. Load Work Experience
+      const expStr = sessionStorage.getItem("userExp");
+      if (expStr) {
+          const exps = JSON.parse(expStr);
+          if (exps.length > 0) {
+              const expBox = document.getElementById("viewExperience");
+              expBox.innerHTML = ""; 
+              exps.forEach(exp => {
+                  expBox.innerHTML += `
+                      <div class="info-block">
+                          <div class="info-title">${exp.role} at ${exp.comp}</div>
+                          <div class="info-desc">Duration: ${exp.dur}</div>
+                      </div>`;
+              });
+          }
+      }
+  });
+</script>
+</body>
+</html>
