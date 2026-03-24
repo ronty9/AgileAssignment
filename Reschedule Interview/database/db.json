@@ -1,0 +1,173 @@
+{
+  "users": [
+    {
+      "id": "EMP-001",
+      "role": "employer",
+      "name": "Aina Rahman",
+      "email": "hr@pixelforge.com",
+      "password": "employer123",
+      "company": "PixelForge"
+    },
+    {
+      "id": "EMP-002",
+      "role": "employer",
+      "name": "Marcus Lee",
+      "email": "recruiter@novaedge.com",
+      "password": "employer123",
+      "company": "NovaEdge"
+    },
+    {
+      "id": "JS-001",
+      "role": "job_seeker",
+      "name": "Siti Nur",
+      "email": "siti@example.com",
+      "password": "seeker123"
+    },
+    {
+      "id": "JS-002",
+      "role": "job_seeker",
+      "name": "Alex Tan",
+      "email": "alex@example.com",
+      "password": "seeker123"
+    },
+    {
+      "id": "JS-003",
+      "role": "job_seeker",
+      "name": "Daniel Lim",
+      "email": "daniel@example.com",
+      "password": "seeker123"
+    },
+    {
+      "id": "JS-004",
+      "role": "job_seeker",
+      "name": "Farah Imani",
+      "email": "farah@example.com",
+      "password": "seeker123"
+    },
+    {
+      "id": "JS-005",
+      "role": "job_seeker",
+      "name": "Jason Wong",
+      "email": "jason@example.com",
+      "password": "seeker123"
+    }
+  ],
+  "applications": [
+    {
+      "id": "APP-001",
+      "jobTitle": "Frontend Designer Intern",
+      "jobSeekerId": "JS-001",
+      "employerId": "EMP-001",
+      "applicationStatus": "Shortlisted"
+    },
+    {
+      "id": "APP-002",
+      "jobTitle": "Web Developer Intern",
+      "jobSeekerId": "JS-002",
+      "employerId": "EMP-001",
+      "applicationStatus": "Shortlisted"
+    },
+    {
+      "id": "APP-003",
+      "jobTitle": "Data Analyst Intern",
+      "jobSeekerId": "JS-003",
+      "employerId": "EMP-001",
+      "applicationStatus": "Shortlisted"
+    },
+    {
+      "id": "APP-004",
+      "jobTitle": "Graphic Design Intern",
+      "jobSeekerId": "JS-004",
+      "employerId": "EMP-001",
+      "applicationStatus": "Shortlisted"
+    },
+    {
+      "id": "APP-005",
+      "jobTitle": "Backend Developer Intern",
+      "jobSeekerId": "JS-005",
+      "employerId": "EMP-001",
+      "applicationStatus": "Shortlisted"
+    },
+    {
+      "id": "APP-006",
+      "jobTitle": "Mobile App Developer Intern",
+      "jobSeekerId": "JS-001",
+      "employerId": "EMP-002",
+      "applicationStatus": "Shortlisted"
+    }
+  ],
+  "invitations": [
+    {
+      "id": "INV-001",
+      "applicationId": "APP-001",
+      "jobSeekerId": "JS-001",
+      "applicantName": "Siti Nur",
+      "employerId": "EMP-001",
+      "employerName": "Aina Rahman",
+      "jobTitle": "Frontend Designer Intern",
+      "type": "Physical",
+      "scheduledAt": "2027-03-29T10:00:00.000Z",
+      "meetingLink": "",
+      "location": "Level 5, PixelForge Plaza, Shah Alam",
+      "notes": "Please arrive 15 minutes earlier for registration.",
+      "status": "Pending",
+      "createdBy": "EMP-001",
+      "createdAt": "2026-03-10T08:00:00.000Z",
+      "updatedAt": "2026-03-10T08:00:00.000Z"
+    },
+    {
+      "id": "INV-002",
+      "applicationId": "APP-002",
+      "jobSeekerId": "JS-002",
+      "applicantName": "Alex Tan",
+      "employerId": "EMP-001",
+      "employerName": "Aina Rahman",
+      "jobTitle": "Web Developer Intern",
+      "type": "Online",
+      "scheduledAt": "2027-03-28T08:00:00.000Z",
+      "meetingLink": "https://meet.google.com/vs-web-005",
+      "location": "",
+      "notes": "Please prepare your portfolio and GitHub repository.",
+      "status": "Pending",
+      "createdBy": "EMP-001",
+      "createdAt": "2026-03-10T08:00:00.000Z",
+      "updatedAt": "2026-03-10T08:00:00.000Z"
+    },
+    {
+      "id": "INV-003",
+      "applicationId": "APP-003",
+      "jobSeekerId": "JS-003",
+      "applicantName": "Daniel Lim",
+      "employerId": "EMP-001",
+      "employerName": "Aina Rahman",
+      "jobTitle": "Data Analyst Intern",
+      "type": "Online",
+      "scheduledAt": "2027-03-26T05:00:00.000Z",
+      "meetingLink": "https://meet.google.com/fe-data-004",
+      "location": "",
+      "notes": "Bring your final year project summary for discussion.",
+      "status": "Pending",
+      "createdBy": "EMP-001",
+      "createdAt": "2026-03-10T08:00:00.000Z",
+      "updatedAt": "2026-03-10T08:00:00.000Z"
+    },
+    {
+      "id": "INV-004",
+      "applicationId": "APP-006",
+      "jobSeekerId": "JS-001",
+      "applicantName": "Siti Nur",
+      "employerId": "EMP-002",
+      "employerName": "Marcus Lee",
+      "jobTitle": "Mobile App Developer Intern",
+      "type": "Physical",
+      "scheduledAt": "2027-04-03T02:30:00.000Z",
+      "meetingLink": "",
+      "location": "NovaEdge Tower, Petaling Jaya",
+      "notes": "Bring identification document on interview day.",
+      "status": "Pending",
+      "createdBy": "EMP-002",
+      "createdAt": "2026-03-10T08:00:00.000Z",
+      "updatedAt": "2026-03-10T08:00:00.000Z"
+    }
+  ]
+}
