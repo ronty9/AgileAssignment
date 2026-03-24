@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Job Portal • My Applications</title>
+  <link rel="stylesheet" href="applications.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="brand">
+        <div class="logo">J</div>
+        <div class="brand-text">
+          <div class="brand-name">Job Portal</div>
+        </div>
+      </div>
+      <nav class="nav">
+        <a href="#" class="nav-link active">My Applications</a>
+      </nav>
+      <div class="auth">
+        <div class="status">Signed in as: Seeker-001</div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <div class="card-title">My Applications</div>
+      
+      <div id="appsWrap" class="table-wrap">
+        </div>
+      
+      <div id="paginationWrap" class="pagination" style="display: none;">
+        <button class="btn btn-outline" id="btnPrev">Previous</button>
+        <span id="pageInfo" class="muted">Page 1</span>
+        <button class="btn btn-outline" id="btnNext">Next</button>
+      </div>
+    </section>
+  </main>
+
+  <div class="overlay" id="overlayAppDetails">
+    <div class="modal">
+      <div class="modal-head">
+        <div class="modal-title">Application Details</div>
+        <button class="btn btn-outline" id="closeAppDetails">X</button>
+      </div>
+      <div class="modal-body" id="appDetailsContent">
+        </div>
+    </div>
+  </div>
+
+  <script src="applications.js"></script>
+</body>
+</html>
