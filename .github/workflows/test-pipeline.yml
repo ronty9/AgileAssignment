@@ -1,7 +1,10 @@
 name: Automated Unit Tests
 
 # This tells GitHub WHEN to run the tests
-on: [push]
+on:
+  push:
+    branches: [ JobApplicationManagement]
+  pull_request:
 # This tells GitHub WHAT to do
 jobs:
   test:
