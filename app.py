@@ -1,5 +1,6 @@
 from flask import Flask, request, redirect, url_for, render_template_string, flash, session
 import sqlite3
+import os
 from datetime import date, datetime
 from uuid import uuid4
 
@@ -36,7 +37,18 @@ TITLE_MAX       = 100
 LOCATION_MAX    = 100
 DESCRIPTION_MIN = 20
 DESCRIPTION_MAX = 5000
+REQUIREMENTS_MAX = 3000
 DEADLINE_MAX_YEARS = 2    # deadline must not be > 2 years from today
+
+JOB_FORM_FIELDS = (
+  "title",
+  "description",
+  "requirements",
+  "location",
+  "job_type",
+  "industry",
+  "application_deadline",
+)
 
 
 def _add_years(d, years):
@@ -358,6 +370,13 @@ def init_db():
         conn.commit()
     except Exception:
         pass  # column already exists
+    
+    # Migrate existing databases: add requirements column if not yet present
+    try:
+        conn.execute("ALTER TABLE jobs ADD COLUMN requirements TEXT NOT NULL DEFAULT ''")
+        conn.commit()
+    except Exception:
+        pass  # column already exists
     conn.close()
 
 
@@ -385,6 +404,7 @@ def validate_job_form(form_data):
     required_fields = {
         "title": "Job Title",
         "description": "Job Description",
+        "requirements": "Job Requirements",
         "location": "Location",
         "job_type": "Job Type",
         "industry": "Industry",
@@ -407,6 +427,13 @@ def validate_job_form(form_data):
         errors["description"] = f"Job Description must be at least {DESCRIPTION_MIN} characters."
     elif description and len(description) > DESCRIPTION_MAX:
         errors["description"] = f"Job Description must not exceed {DESCRIPTION_MAX} characters (currently {len(description)})."
+
+    # Requirements length (min + max)
+    requirements = (form_data.get("requirements") or "").strip()
+    if requirements and len(requirements) < DESCRIPTION_MIN:
+        errors["requirements"] = f"Job Requirements must be at least {DESCRIPTION_MIN} characters."
+    elif requirements and len(requirements) > REQUIREMENTS_MAX:
+        errors["requirements"] = f"Job Requirements must not exceed {REQUIREMENTS_MAX} characters (currently {len(requirements)})."
 
     # Location length
     location = (form_data.get("location") or "").strip()
@@ -443,6 +470,18 @@ def validate_job_form(form_data):
             errors["application_deadline"] = "Application deadline format is invalid (YYYY-MM-DD required)."
 
     return errors
+
+
+def empty_job_form_values():
+    return {field: "" for field in JOB_FORM_FIELDS}
+
+
+def parse_job_form(form_data):
+    return {field: (form_data.get(field) or "").strip() for field in JOB_FORM_FIELDS}
+
+
+def job_row_to_form_values(job_row):
+    return {field: (job_row[field] or "") for field in JOB_FORM_FIELDS}
 
 
 # -----------------------------
@@ -584,25 +623,11 @@ def new_job():
         flash("Only an authenticated employer can access the Post Job Opening function.", "error")
         return redirect(url_for("home"))
 
-    form_values = {
-        "title": "",
-        "description": "",
-        "location": "",
-        "job_type": "",
-        "industry": "",
-        "application_deadline": "",
-    }
+    form_values = empty_job_form_values()
     errors = {}
 
     if request.method == "POST":
-        form_values = {
-            "title": (request.form.get("title") or "").strip(),
-            "description": (request.form.get("description") or "").strip(),
-            "location": (request.form.get("location") or "").strip(),
-            "job_type": (request.form.get("job_type") or "").strip(),
-            "industry": (request.form.get("industry") or "").strip(),
-            "application_deadline": (request.form.get("application_deadline") or "").strip(),
-        }
+        form_values = parse_job_form(request.form)
 
         # SAT #3, #4, #5, #6
         errors = validate_job_form(form_values)
@@ -616,9 +641,9 @@ def new_job():
             conn.execute(
                 """
                 INSERT INTO jobs (
-                    job_id, employer_id, employer_name, title, description, location,
+                    job_id, employer_id, employer_name, title, description, requirements, location,
                     job_type, industry, application_deadline, status, created_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     job_id,
@@ -626,6 +651,7 @@ def new_job():
                     session["employer_name"],
                     form_values["title"],
                     form_values["description"],
+                    form_values["requirements"],
                     form_values["location"],
                     form_values["job_type"],
                     form_values["industry"],
@@ -685,10 +711,19 @@ def new_job():
           <div class="form-field {{ 'has-error' if errors.get('description') }}">
             <label class="form-label" for="description">Job Description <span class="required">*</span></label>
             <textarea class="form-control" id="description" name="description"
-              placeholder="Enter responsibilities, requirements, and skills needed…"
+              placeholder="Enter responsibilities, duties, and what the role involves…"
               maxlength="{{ description_max }}">{{ form_values.description }}</textarea>
             <div class="char-hint">Min {{ description_min }} · Max {{ description_max }} characters</div>
             {% if errors.get('description') %}<div class="field-error">{{ errors.get('description') }}</div>{% endif %}
+          </div>
+
+          <div class="form-field {{ 'has-error' if errors.get('requirements') }}">
+            <label class="form-label" for="requirements">Job Requirements <span class="required">*</span></label>
+            <textarea class="form-control" id="requirements" name="requirements"
+              placeholder="Enter skills, qualifications, experience, and other requirements…"
+              maxlength="{{ requirements_max }}">{{ form_values.requirements }}</textarea>
+            <div class="char-hint">Min {{ description_min }} · Max {{ requirements_max }} characters</div>
+            {% if errors.get('requirements') %}<div class="field-error">{{ errors.get('requirements') }}</div>{% endif %}
           </div>
 
           <div class="grid-2">
@@ -750,6 +785,7 @@ def new_job():
           All fields marked <span class="required">*</span> are required.<br><br>
           Title: max {{ title_max }} chars.<br>
           Description: {{ description_min }}–{{ description_max }} chars.<br>
+          Requirements: {{ description_min }}–{{ requirements_max }} chars.<br>
           Location: max {{ location_max }} chars.<br>
           Industry: select from the list.<br>
           Deadline: today → {{ max_deadline_str }}.<br><br>
@@ -777,6 +813,7 @@ def new_job():
         location_max=LOCATION_MAX,
         description_min=DESCRIPTION_MIN,
         description_max=DESCRIPTION_MAX,
+        requirements_max=REQUIREMENTS_MAX,
         allowed_industries=ALLOWED_INDUSTRIES,
     )
 
@@ -876,6 +913,7 @@ def employer_jobs():
                 <td><span class="small muted">{{ job['created_at'] }}</span></td>
                 <td style="text-align:right;">
                   <a class="btn-outline" style="padding:4px 10px; font-size:12px;" href="{{ url_for('view_job', job_id=job['job_id']) }}">View</a>
+                  <a class="btn-outline" style="padding:4px 10px; font-size:12px; margin-left:6px;" href="{{ url_for('edit_job', job_id=job['job_id']) }}">Edit</a>
                 </td>
               </tr>
             {% endfor %}
@@ -911,7 +949,7 @@ def view_job(job_id):
     conn = get_conn()
     job = conn.execute(
         """
-        SELECT job_id, employer_id, employer_name, title, description, location, job_type,
+        SELECT job_id, employer_id, employer_name, title, description, requirements, location, job_type,
                industry, application_deadline, status, created_at
         FROM jobs
         WHERE job_id = ? AND employer_id = ?
@@ -1008,7 +1046,7 @@ def view_job(job_id):
         <h1 class="job-title">{{ job['title'] }}</h1>
         
         <div style="display:flex; gap:14px; align-items:center;">
-          <a href="#" class="btn" style="background:white; color:#0f172a; border-color:white; padding: 10px 24px; font-size:15px; font-weight:700;">
+          <a href="{{ url_for('edit_job', job_id=job['job_id']) }}" class="btn" style="background:white; color:#0f172a; border-color:white; padding: 10px 24px; font-size:15px; font-weight:700;">
              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
              Edit Job
           </a>
@@ -1021,7 +1059,7 @@ def view_job(job_id):
     </div>
 
     <div class="job-layout">
-      <!-- Left Column: Description -->
+      <!-- Left Column -->
       <div>
         <div class="card" style="padding: 36px 32px;">
           <div class="detail-section" style="margin-bottom:0;">
@@ -1030,6 +1068,44 @@ def view_job(job_id):
               About the Role
             </h3>
             <div class="description-content">{{ job['description'] }}</div>
+          </div>
+        </div>
+
+        <div class="card" style="padding: 36px 32px;">
+          <div class="detail-section" style="margin-bottom:0;">
+            <h3>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="muted"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              Job Requirements
+            </h3>
+            <div class="description-content">{{ job['requirements'] }}</div>
+          </div>
+        </div>
+
+        <div class="card" style="padding: 36px 32px;">
+          <div class="detail-section" style="margin-bottom:0;">
+            <h3>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="muted"><path d="M3 21h18"/><path d="M5 21V7l8-4 8 4v14"/><path d="M17 21v-8.5a5.5 5.5 0 0 0-11 0V21"/></svg>
+              About Our Company
+            </h3>
+            <div class="description-content" style="line-height:1.7;">
+<strong>{{ job['employer_name'] }}</strong> is a <strong>Technology & IT</strong> company focused on innovation and excellence in software development. We are a <strong>mid-sized organization</strong> with a passion for building cutting-edge solutions that make a difference in people's lives.
+
+<h4 style="font-size:16px; font-weight:700; color:var(--text); margin: 20px 0 12px;">Our Mission</h4>
+<p style="margin:0;">To create innovative technology solutions that empower businesses and individuals to achieve more.</p>
+
+<h4 style="font-size:16px; font-weight:700; color:var(--text); margin: 20px 0 12px;">Company Culture</h4>
+<p style="margin:0;">We believe in fostering a collaborative, inclusive, and growth-oriented environment where every team member can thrive. Our culture values creativity, integrity, and continuous learning.</p>
+
+<h4 style="font-size:16px; font-weight:700; color:var(--text); margin: 20px 0 12px;">Benefits & Perks</h4>
+<ul style="margin:0; padding-left:20px; display:grid; gap:8px;">
+  <li>Competitive salary and performance bonuses</li>
+  <li>Health insurance and wellness programs</li>
+  <li>Flexible work arrangements</li>
+  <li>Professional development opportunities</li>
+  <li>Modern office with collaborative spaces</li>
+  <li>Team building activities and social events</li>
+</ul>
+            </div>
           </div>
         </div>
       </div>
@@ -1077,5 +1153,214 @@ def view_job(job_id):
     )
 
 
+@app.route("/jobs/<job_id>/edit", methods=["GET", "POST"])
+def edit_job(job_id):
+    if not is_employer_logged_in():
+        flash("Only an authenticated employer can edit job postings.", "error")
+        return redirect(url_for("home"))
+
+    conn = get_conn()
+    existing_job = conn.execute(
+        """
+        SELECT job_id, employer_id, title, description, requirements, location,
+               job_type, industry, application_deadline, status
+        FROM jobs
+        WHERE job_id = ? AND employer_id = ?
+        """,
+        (job_id, session["employer_id"]),
+    ).fetchone()
+
+    if not existing_job:
+        conn.close()
+        flash("Job not found or you do not have permission to edit it.", "error")
+        return redirect(url_for("employer_jobs"))
+
+    original_values = job_row_to_form_values(existing_job)
+    form_values = original_values.copy()
+    errors = {}
+
+    if request.method == "POST":
+      form_values = parse_job_form(request.form)
+
+      if form_values == original_values:
+        conn.close()
+        flash(f"No changes detected for job posting {job_id}.", "success")
+        return redirect(url_for("view_job", job_id=job_id))
+
+      errors = validate_job_form(form_values)
+
+      if not errors:
+        conn.execute(
+          """
+          UPDATE jobs
+          SET title = ?,
+            description = ?,
+            requirements = ?,
+            location = ?,
+            job_type = ?,
+            industry = ?,
+            application_deadline = ?
+          WHERE job_id = ? AND employer_id = ?
+          """,
+          (
+            form_values["title"],
+            form_values["description"],
+            form_values["requirements"],
+            form_values["location"],
+            form_values["job_type"],
+            form_values["industry"],
+            form_values["application_deadline"],
+            job_id,
+            session["employer_id"],
+          ),
+        )
+        conn.commit()
+        conn.close()
+        flash(f"Job posting {job_id} updated successfully.", "success")
+        return redirect(url_for("view_job", job_id=job_id))
+
+    conn.close()
+
+    today_str = date.today().strftime("%Y-%m-%d")
+    max_deadline_str = (_add_years(date.today(), DEADLINE_MAX_YEARS)).strftime("%Y-%m-%d")
+
+    return render_template_string(
+        """
+<!doctype html>
+<html lang="en">
+<head>""" + SHARED_HEAD + """<title>Edit Job Posting — JobPortal</title>
+</head>
+<body>""" + NAVBAR_TEMPLATE + """
+  <div class="page">
+    <div class="page-header">
+      <div>
+        <h1>Edit Job Posting</h1>
+        <div class="sub">Updating <code>{{ job_id }}</code> for <strong>{{ session.get('employer_name') }}</strong></div>
+      </div>
+      <div class="actions">
+        <a class="btn-outline" href="{{ url_for('view_job', job_id=job_id) }}">← Back to Job</a>
+        <a class="btn-outline" href="{{ url_for('employer_jobs') }}">My Posted Jobs</a>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1.5fr 0.75fr;gap:16px;align-items:start;">
+      <div class="card">
+        {% if errors %}
+          <div class="error-summary">
+            <strong>Please fix the following errors before submitting:</strong>
+            <ul>{% for msg in errors.values() %}<li>{{ msg }}</li>{% endfor %}</ul>
+          </div>
+        {% endif %}
+
+        <form method="post" novalidate>
+          <div class="form-field {{ 'has-error' if errors.get('title') }}">
+            <label class="form-label" for="title">Job Title <span class="required">*</span></label>
+            <input class="form-control" type="text" id="title" name="title"
+              value="{{ form_values.title }}" placeholder="e.g., Junior Software Engineer"
+              autocomplete="off" maxlength="{{ title_max }}">
+            <div class="char-hint">Max {{ title_max }} characters</div>
+            {% if errors.get('title') %}<div class="field-error">{{ errors.get('title') }}</div>{% endif %}
+          </div>
+
+          <div class="form-field {{ 'has-error' if errors.get('description') }}">
+            <label class="form-label" for="description">Job Description <span class="required">*</span></label>
+            <textarea class="form-control" id="description" name="description"
+              placeholder="Enter responsibilities, duties, and what the role involves…"
+              maxlength="{{ description_max }}">{{ form_values.description }}</textarea>
+            <div class="char-hint">Min {{ description_min }} · Max {{ description_max }} characters</div>
+            {% if errors.get('description') %}<div class="field-error">{{ errors.get('description') }}</div>{% endif %}
+          </div>
+
+          <div class="form-field {{ 'has-error' if errors.get('requirements') }}">
+            <label class="form-label" for="requirements">Job Requirements <span class="required">*</span></label>
+            <textarea class="form-control" id="requirements" name="requirements"
+              placeholder="Enter skills, qualifications, experience, and other requirements…"
+              maxlength="{{ requirements_max }}">{{ form_values.requirements }}</textarea>
+            <div class="char-hint">Min {{ description_min }} · Max {{ requirements_max }} characters</div>
+            {% if errors.get('requirements') %}<div class="field-error">{{ errors.get('requirements') }}</div>{% endif %}
+          </div>
+
+          <div class="grid-2">
+            <div class="form-field {{ 'has-error' if errors.get('location') }}">
+              <label class="form-label" for="location">Location <span class="required">*</span></label>
+              <input class="form-control" type="text" id="location" name="location"
+                value="{{ form_values.location }}" placeholder="e.g., Penang"
+                maxlength="{{ location_max }}">
+              {% if errors.get('location') %}<div class="field-error">{{ errors.get('location') }}</div>{% endif %}
+            </div>
+            <div class="form-field {{ 'has-error' if errors.get('job_type') }}">
+              <label class="form-label" for="job_type">Job Type <span class="required">*</span></label>
+              <select class="form-control" id="job_type" name="job_type">
+                <option value="">— Select Job Type —</option>
+                {% for jt in allowed_job_types %}
+                  <option value="{{ jt }}" {% if form_values.job_type == jt %}selected{% endif %}>{{ jt }}</option>
+                {% endfor %}
+              </select>
+              {% if errors.get('job_type') %}<div class="field-error">{{ errors.get('job_type') }}</div>{% endif %}
+            </div>
+          </div>
+
+          <div class="form-field {{ 'has-error' if errors.get('industry') }}">
+            <label class="form-label" for="industry">Industry <span class="required">*</span></label>
+            <select class="form-control" id="industry" name="industry">
+              <option value="">— Select Industry —</option>
+              {% for ind in allowed_industries %}
+                <option value="{{ ind }}" {% if form_values.industry == ind %}selected{% endif %}>{{ ind }}</option>
+              {% endfor %}
+            </select>
+            {% if errors.get('industry') %}<div class="field-error">{{ errors.get('industry') }}</div>{% endif %}
+          </div>
+
+          <div class="form-field {{ 'has-error' if errors.get('application_deadline') }}">
+            <label class="form-label" for="application_deadline">Application Deadline <span class="required">*</span></label>
+            <input class="form-control" type="date" id="application_deadline" name="application_deadline"
+              value="{{ form_values.application_deadline }}"
+              min="{{ today_str }}" max="{{ max_deadline_str }}" style="max-width:220px;">
+            <div class="char-hint">Between today and {{ max_deadline_str }}</div>
+            {% if errors.get('application_deadline') %}<div class="field-error">{{ errors.get('application_deadline') }}</div>{% endif %}
+          </div>
+
+          <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;">
+            <button type="submit" class="btn">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Save Changes
+            </button>
+            <a class="btn-outline" href="{{ url_for('view_job', job_id=job_id) }}">Cancel</a>
+          </div>
+        </form>
+      </div>
+
+      <div>
+        <div class="sidebar-note">
+          <strong>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline;vertical-align:middle;margin-right:4px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Edit Rules
+          </strong>
+          You can update title, description, requirements, location, job type, industry, and deadline.<br><br>
+          Deadline must be between today and {{ max_deadline_str }}.<br>
+          Existing job ID and status remain unchanged.
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+        """,
+        job_id=job_id,
+        form_values=form_values,
+        errors=errors,
+        allowed_job_types=ALLOWED_JOB_TYPES,
+        today_str=today_str,
+        max_deadline_str=max_deadline_str,
+        title_max=TITLE_MAX,
+        location_max=LOCATION_MAX,
+        description_min=DESCRIPTION_MIN,
+        description_max=DESCRIPTION_MAX,
+        requirements_max=REQUIREMENTS_MAX,
+        allowed_industries=ALLOWED_INDUSTRIES,
+    )
+
+
 if __name__ == "__main__":
-    app.run(debug=True)
+  port = int(os.environ.get("PORT", "5001"))
+  app.run(debug=True, port=port)
