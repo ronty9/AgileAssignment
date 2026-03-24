@@ -1,6 +1,9 @@
 name: JavaScript Unit Tests
 
-on: [push]
+on:
+  push:
+    branches: [ Interview-&-Scheduling-Module ]
+  pull_request:
 
 jobs:
   test:
@@ -8,7 +11,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: "Interview reschedule"
+        working-directory: "Reschedule Interview"
 
     steps:
       - name: Checkout repository
