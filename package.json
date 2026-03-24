@@ -8,7 +8,7 @@
   "type": "commonjs",
   "main": "../js/app.js",
   "scripts": {
-    "test": "jest --runTestsByPath \"Interview reschedule/test/test.js\""
+    "test": "jest --runTestsByPath \"Reschedule Interview/test/test.js\""
   },
   "dependencies": {
     "ansi-escapes": "^4.3.2",
