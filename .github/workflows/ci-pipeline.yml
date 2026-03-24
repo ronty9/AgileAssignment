@@ -3,7 +3,7 @@ name: Automated Unit Tests (CI)
 # This tells the pipeline to run every time you push code to the main branch
 on:
   push:
-    branches: [ JobSeekProfile ]
+    branches: [ JobSeekProfileManagement]
   pull_request:
 
 
