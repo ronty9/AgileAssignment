@@ -7,24 +7,26 @@ const state = {
   toastTimer: null
 };
 
-document.addEventListener("DOMContentLoaded", async () => {
-  try {
-    state.db = await loadDatabase();
+if (typeof document !== "undefined") {
+  document.addEventListener("DOMContentLoaded", async () => {
+    try {
+      state.db = await loadDatabase();
 
-    const page = document.body.dataset.page;
+      const page = document.body.dataset.page;
 
-    if (page === "login") {
-      initLoginPage();
-    } else if (page === "main") {
-      initMainPage();
+      if (page === "login") {
+        initLoginPage();
+      } else if (page === "main") {
+        initMainPage();
+      }
+    } catch (error) {
+      console.error(error);
+      alert(
+        "Unable to load db.json.\nPlease run this project using VS Code Live Server or another local server."
+      );
     }
-  } catch (error) {
-    console.error(error);
-    alert(
-      "Unable to load db.json.\nPlease run this project using VS Code Live Server or another local server."
-    );
-  }
-});
+  });
+}
 
 async function loadDatabase() {
   const stored = localStorage.getItem(DB_STORAGE_KEY);
@@ -461,12 +463,19 @@ function handleInvitationSubmit(event) {
     return;
   }
 
-  existing.type = interviewType;
-  existing.scheduledAt = new Date(scheduledAt).toISOString();
-  existing.meetingLink = interviewType === "Online" ? meetingLink : "";
-  existing.location = interviewType === "Physical" ? location : "";
-  existing.notes = notes;
-  existing.updatedAt = new Date().toISOString();
+  if (!canRescheduleInvitation(state.session, existing)) {
+    formMessage.textContent =
+      "You are not allowed to reschedule this invitation.";
+    return;
+  }
+
+  applyInvitationUpdate(existing, {
+    interviewType,
+    scheduledAt,
+    meetingLink,
+    location,
+    notes
+  });
 
   saveDatabase();
   closeFormModal();
@@ -534,6 +543,26 @@ function validateInvitationForm(data) {
   return { valid: true, message: "" };
 }
 
+function canRescheduleInvitation(session, invitation) {
+  return !!session &&
+    session.role === "employer" &&
+    !!invitation &&
+    invitation.employerId === session.id;
+}
+
+function applyInvitationUpdate(existing, updateData) {
+  existing.type = updateData.interviewType;
+  existing.scheduledAt = new Date(updateData.scheduledAt).toISOString();
+  existing.meetingLink =
+    updateData.interviewType === "Online" ? updateData.meetingLink : "";
+  existing.location =
+    updateData.interviewType === "Physical" ? updateData.location : "";
+  existing.notes = updateData.notes;
+  existing.updatedAt = new Date().toISOString();
+
+  return existing;
+}
+
 function deleteInvitation(invitationId) {
   const invitation = findInvitationById(invitationId);
   if (!invitation) return;
@@ -553,6 +582,9 @@ function deleteInvitation(invitationId) {
   closeViewModal();
   showToast("Invitation deleted successfully.");
 }
+
+
+
 
 function findUserById(userId) {
   return state.db.users.find((user) => user.id === userId);
@@ -624,4 +656,13 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = {
+    validateInvitationForm,
+    isValidHttpUrl,
+    canRescheduleInvitation,
+    applyInvitationUpdate
+  };
 }
